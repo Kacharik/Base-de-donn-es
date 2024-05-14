@@ -11,8 +11,8 @@ def create_connection():
         
         connection = connect(
             host="localhost",
-            user="root",#input("Enter username: ")"",
-            password="2003",#input("Enter password: "),
+            user=input("Enter username: "),
+            password=input("Enter password: "),
         )
         print("Connection successful")
         return connection
