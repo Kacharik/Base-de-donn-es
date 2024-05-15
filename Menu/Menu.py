@@ -3,6 +3,7 @@ import mysql.connector
 from Restaurateur import *
 from Client import *
 from Moderateur import *
+from Check_data import *
 from Requete_1 import *
 from Requete_2 import *
 from Requete_3 import *
@@ -17,7 +18,6 @@ connexion = mysql.connector.connect(
     password=input("Entrez le mot de passe : "),
     database="FastFood"
 )
-
 cursor = connexion.cursor()
 
 def effacer_terminal():
@@ -209,13 +209,13 @@ def Register(perso):
         print("Qu'elle est votre Prenom ?")
         firstname = input()
         effacer_terminal()
-        if(len(firstname) < 10):
+        if(notSpecialChar(firstname) and not isDigit(firstname)):
             good_firstname = True
     while(not good_lastname):
         print("Qu'elle est votre Nom ?")
         lastname = input()
         effacer_terminal()
-        if(len(lastname) < 10):
+        if(notSpecialChar(lastname) and not isDigit(lastname)):
             good_lastname = True
     while(not good_country):
         print("Dans quel pays habitez vous ?")
@@ -227,25 +227,25 @@ def Register(perso):
         print("Dans quel ville habitez vous ?")
         city = input()
         effacer_terminal()
-        if(True):
+        if(notSpecialChar(city) and not isDigit(city)):
             good_city = True
     while(not good_zipcode):
         print("Le code postal de votre domicile ?")
         zipcode = input()
         effacer_terminal()
-        if(len(zipcode) > 3):
+        if(isDigit(zipcode)):
             good_zipcode = True
     while(not good_street):
         print("La rue de votre domicile ?")
         street = input()
         effacer_terminal()
-        if(True):
+        if(notSpecialChar(street) and not isDigit(street)):
             good_street = True
     while(not good_number):
         print("Le numero de votre domicile ?")
         number = input()
         effacer_terminal()
-        if(True):
+        if(isDigit(number)):
             good_number = True
 
     nom = firstname + lastname
