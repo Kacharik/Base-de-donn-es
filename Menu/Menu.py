@@ -84,18 +84,13 @@ def Menu_principale(perso):
                 good_choice = True
 
         if(choix == "1"):
-            cursor.execute("SELECT * FROM Client WHERE street = 'Peterbos'")
-            resultat = cursor.fetchall()
-            print("je suis la")
-            for ligne in resultat:
-                print(ligne)
-            Ajouter_avis()
+            Ajouter_avis(cursor)
 
         elif(choix == "2"):
-            Consulter_avis()
+            Consulter_avis(cursor)
 
         elif(choix == "3"):
-            Info_resto()
+            Info_resto(cursor)
 
         elif(choix == "4"):
             Requete_demande(perso)
@@ -121,10 +116,10 @@ def Menu_principale(perso):
                 good_choice = True
 
         if(choix == "1"):
-            New_resto()
+            New_resto(cursor)
 
         elif(choix == "2"):
-            Avis_resto()
+            Avis_resto(cursor)
 
         elif(choix == "3"):
             Requete_demande(perso)
@@ -149,7 +144,7 @@ def Menu_principale(perso):
                 good_choice = True
 
         if(choix == "1"):
-            Check_avis()
+            Check_avis(cursor)
 
         elif(choix == "2"):
             Requete_demande(perso)
@@ -279,11 +274,28 @@ def Login(perso):
     while(not good_name):
         print("Connexion :")
         print("-----------")
-        print("!! Entrez votre Nom et Prenom avec un espace entre !!")
+        print("!! Entrez votre Nom !!")
         print()
-        name = input()
+        last_name = input()
         effacer_terminal()
-        if(True):   #Requete qui vérifie si le Nom est dans la table du perso
+        print("Connexion :")
+        print("-----------")
+        print("!! Entrez votre Prenom !!")
+        print()
+        first_name = input()
+        effacer_terminal()
+        nom = first_name + " " + last_name
+        if(perso == "Client"):
+            cursor.execute("SELECT * FROM Client WHERE nom = '" + last_name + "' AND prenom = '" + first_name + "'")
+            resultat = cursor.fetchall()
+        elif(perso == "Restaurateur"):
+            cursor.execute("SELECT * FROM Restaurateur WHERE nom = '" + nom + "'")
+            resultat = cursor.fetchall()
+        else:
+            cursor.execute("SELECT * FROM Moderateur WHERE nom = '" + nom + "'")
+            resultat = cursor.fetchall()
+
+        if(len(resultat) != 0):   #Requete qui vérifie si le Nom est dans la table du perso
             good_name = True
 
 

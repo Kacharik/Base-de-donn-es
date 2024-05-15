@@ -1,5 +1,5 @@
-def New_resto():
+def New_resto(cursor):
     pass
 
-def Avis_resto():
+def Avis_resto(cursor):
     pass

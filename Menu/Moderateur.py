@@ -1,2 +1,2 @@
-def Check_avis():
+def Check_avis(cursor):
     pass
