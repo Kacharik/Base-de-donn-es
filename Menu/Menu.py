@@ -84,7 +84,7 @@ def Menu_principale(perso):
                 good_choice = True
 
         if(choix == "1"):
-            cursor.execute("SELECT * FROM Client")
+            cursor.execute("SELECT * FROM Client WHERE street = 'Peterbos'")
             resultat = cursor.fetchall()
             print("je suis la")
             for ligne in resultat:
@@ -196,8 +196,19 @@ def User():
 def Register(perso):
     good_firstname = False
     good_lastname = False
+    good_street = False
+    good_country = False
+    good_city = False
+    good_zipcode = False
+    good_number = False
+
     firstname = ""
     lastname = ""
+    street = ""
+    country = ""
+    city = ""
+    zipcode = ""
+    number = ""
 
     while(not good_firstname):
         print("Qu'elle est votre Prenom ?")
@@ -211,9 +222,55 @@ def Register(perso):
         effacer_terminal()
         if(len(lastname) < 10):
             good_lastname = True
+    while(not good_country):
+        print("Dans quel pays habitez vous ?")
+        country = input()
+        effacer_terminal()
+        if(country == "Belgium" or country == "France"):
+            good_country = True
+    while(not good_city):
+        print("Dans quel ville habitez vous ?")
+        city = input()
+        effacer_terminal()
+        if(True):
+            good_city = True
+    while(not good_zipcode):
+        print("Le code postal de votre domicile ?")
+        zipcode = input()
+        effacer_terminal()
+        if(len(zipcode) > 3):
+            good_zipcode = True
+    while(not good_street):
+        print("La rue de votre domicile ?")
+        street = input()
+        effacer_terminal()
+        if(True):
+            good_street = True
+    while(not good_number):
+        print("Le numero de votre domicile ?")
+        number = input()
+        effacer_terminal()
+        if(True):
+            good_number = True
 
-    #Requete pour ajouter le Nom et le Prénom dans la table du perso
+    nom = firstname + lastname
 
+    if(perso == "Client"):
+        query_client = "INSERT INTO Client (nom, prenom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        data_client = (lastname, firstname, street, number, city, zipcode, country)
+        cursor.execute(query_client, data_client)
+
+    elif(perso == "Restaurateur"):
+        query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
+        data_restaurateur = (nom, street, number, city, zipcode, country)
+        cursor.execute(query_restaurateur, data_restaurateur)
+
+    else:
+        query_mod = "INSERT INTO Moderateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
+        data_mod = (nom, street, number, city, zipcode, country)
+        cursor.execute(query_mod, data_mod)
+
+    connexion.commit()
     Login(perso)
 
 def Login(perso):
