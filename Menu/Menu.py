@@ -2,6 +2,7 @@ import os
 import mysql.connector
 from Restaurateur import *
 from Client import *
+from Moderateur import *
 from Requete_1 import *
 from Requete_2 import *
 from Requete_3 import *
@@ -46,7 +47,7 @@ def Requete_demande(perso):
         Requete_1()
 
     elif(choix == "2"):
-        Requete_2() 
+        Requete_2()
 
     elif(choix == "3"):
         Requete_3()
@@ -102,7 +103,7 @@ def Menu_principale(perso):
         else:
             main()
 
-    else:
+    elif (perso == "Restaurateur"):
         good_choice = False
         choix = ""
 
@@ -131,6 +132,31 @@ def Menu_principale(perso):
         else:
             main()
 
+    else:
+        good_choice = False
+        choix = ""
+
+        while (not good_choice):
+            print("Menu Principal Moderateur :")
+            print("------------------------------")
+            print("1. Consulter les Avis")
+            print("2. Requêtes demandées")
+            print("3. Retour en arrière")
+            print()
+            choix = input()
+            effacer_terminal()
+            if (choix == "1" or choix == "2" or choix == "3"):
+                good_choice = True
+
+        if(choix == "1"):
+            Check_avis()
+
+        elif(choix == "2"):
+            Requete_demande(perso)
+
+        else:
+            main()
+
 def Perso():
     good = False
     choix = ""
@@ -141,10 +167,11 @@ def Perso():
         print("--------------------------------------------------------------")
         print("Client")
         print("Restaurateur")
+        print("Moderateur")
         print()
         choix = input()
         effacer_terminal()
-        if(choix == "Client" or choix == "Restaurateur"):
+        if(choix == "Client" or choix == "Restaurateur" or choix == "Moderateur"):
             good = True
 
     return choix
@@ -185,7 +212,7 @@ def Register(perso):
         if(len(lastname) < 10):
             good_lastname = True
 
-    #Requete pour ajouter le Nom et le Prénom dans la BDD
+    #Requete pour ajouter le Nom et le Prénom dans la table du perso
 
     Login(perso)
 
@@ -199,7 +226,7 @@ def Login(perso):
         print()
         name = input()
         effacer_terminal()
-        if(True):   #Requete qui vérifie si le Nom est dans la base de donnée
+        if(True):   #Requete qui vérifie si le Nom est dans la table du perso
             good_name = True
 
 

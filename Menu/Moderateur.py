@@ -1,1 +1,2 @@
-def
+def Check_avis():
+    pass
