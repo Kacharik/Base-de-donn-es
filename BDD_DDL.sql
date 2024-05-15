@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS FastFood;
 CREATE DATABASE IF NOT EXISTS FastFood; 
 USE FastFood; 
 
@@ -24,21 +25,9 @@ CREATE TABLE IF NOT EXISTS Moderateur (
     country VARCHAR(100) NOT NULL
 );
 
--- Création de la table Restaurateur
-CREATE TABLE IF NOT EXISTS Restaurateur (
-    idRestaurateur INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    street VARCHAR(100) NOT NULL, 
-    numero INT NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    zipcode VARCHAR(100) NOT NULL,
-    country VARCHAR(100) NOT NULL
-
-);
-
 -- Création de la table Restaurant
 CREATE TABLE IF NOT EXISTS Restaurant (
-    restaurant VARCHAR(100) NOT NULL,
+    restaurant VARCHAR(100)  PRIMARY KEY,
     street VARCHAR(100) NOT NULL, 
     numero INT NOT NULL,
     city VARCHAR(100) NOT NULL,
@@ -49,82 +38,89 @@ CREATE TABLE IF NOT EXISTS Restaurant (
     evaluation FLOAT NOT NULL,
     Delivery VARCHAR(3) NOT NULL,
     opening INT NOT NULL,
-    closing INT NOT NULL,
-    PRIMARY KEY(restaurant)
+    closing INT NOT NULL
+   
 );
 
-
--- Création de la table RestoAllergen
-CREATE TABLE IF NOT EXISTS AllergenResto (
-    restaurant VARCHAR(100) NOt NULL,
-    name_plat VARCHAR(100) NOT NULL,
-    allergen VARCHAR(100) , 
-    PRIMARY KEY (restaurant,name_plat),
+-- Création de la table Restaurateur
+CREATE TABLE IF NOT EXISTS Restaurateur (
+    idRestaurateur INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    street VARCHAR(100) NOT NULL, 
+    numero INT NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    zipcode VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    restaurant VARCHAR(100) NOT NULL,
     FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant)
 );
 
+-- Création de la table AllergenResto
+CREATE TABLE IF NOT EXISTS AllergenResto (
+    restaurant VARCHAR(100) NOT NULL,
+    name_plat VARCHAR(100) NOT NULL,
+    allergen VARCHAR(100), 
+    PRIMARY KEY (restaurant, name_plat),
+    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant)
+);
 -- Création de la table MenuResto
 CREATE TABLE IF NOT EXISTS MenuResto (
     restaurant VARCHAR(100) NOT NULL,
     name_plat VARCHAR(100) NOT NULL,
     price VARCHAR(6) NOT NULL,
-    PRIMARY KEY (restaurant,name_plat),
+    PRIMARY KEY (restaurant, name_plat),
     FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant)
 );
-
 -- Création de la table Avis
-CREATE TABLE IF NOT EXISTS Avis (
+CREATE TABLE IF NOT EXISTS AvisValid (
     IdAvis INT AUTO_INCREMENT PRIMARY KEY,
-    client INT NOT NULL,                    --id du client 
-    restaurant VARCHAR(100) NOT NULL,
-    recommandation VARCHAR(100) NOT NULL,
+    Client  INT NOT NULL,
+    restaurant  VARCHAR(100) NOT NULL,
+    recommandation VARCHAR(100),
     DateAvis DATE NOT NULL,
     commentaire TEXT,
-    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
-    FOREIGN KEY (client) REFERENCES Client(idClient)
-);
-
--- Création de la table AvisRefuse
-CREATE TABLE IF NOT EXISTS AvisRefuse (
-    IdAvis INT AUTO_INCREMENT PRIMARY KEY,
-    client INT NOT NULL,
-    restaurant VARCHAR(100) NOT NULL,
-    DateAvis DATE NOT NULL,
-    commentaire TEXT,
-    raison VARCHAR(100) NOT NULL,
-     FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
-    FOREIGN KEY (client) REFERENCES Client(idClient)
-);
-
--- Création de la table ClientResto
-CREATE TABLE IF NOT EXISTS ClientResto (
-    client INT NOT NULL,
-    restaurant VARCHAR(100) NOT NULL,
-    PRIMARY KEY(client,restaurant),
-     FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
-    FOREIGN KEY (client) REFERENCES Client(idClient)
-);
-
--- Création de la table Experience
-CREATE TABLE IF NOT EXISTS Experience (
     DateExp DATE NOT NULL,
     HeureDebut INT NOT NULL, 
     HeureFin INT NOT NULL,
-    Avis INT NOT NULL,
     PrixTotal REAL NOT NULL, 
     Cote INT NOT NULL, 
     Isdelivery BOOLEAN NOT NULL, 
     CoteFeeling INT NOT NULL,
-    PRIMARY KEY(DateExp, HeureDebut, HeureFin),
-    FOREIGN KEY (Avis) REFERENCES Avis(IdAvis)
+    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
+    FOREIGN KEY (Client) REFERENCES Client(idClient)
 );
-
--- Création de la table ExperiencePlat
-CREATE TABLE IF NOT EXISTS ExperiencePlat (
+-- Création de la table AvisRefuse
+CREATE TABLE IF NOT EXISTS AvisRefuse (
+    IdAvis INT AUTO_INCREMENT PRIMARY KEY,
+    Client  INT NOT NULL,
+    restaurant  VARCHAR(100) NOT NULL,
+    recommandation VARCHAR(100),
+    DateAvis DATE NOT NULL,
+    commentaire TEXT,
     DateExp DATE NOT NULL,
     HeureDebut INT NOT NULL, 
     HeureFin INT NOT NULL,
+    PrixTotal REAL NOT NULL, 
+    Cote INT NOT NULL, 
+    Isdelivery BOOLEAN NOT NULL, 
+    CoteFeeling INT NOT NULL,
+    raison VARCHAR(100) NOT NULL,
+    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
+    FOREIGN KEY (Client) REFERENCES Client(idClient)
+);
+
+-- Création de la table ExperiencePlatValid
+CREATE TABLE IF NOT EXISTS ExperiencePlatValid (
+    Avis INT NOT NULL,
     plat VARCHAR(100) NOT NULL,
-    PRIMARY KEY(DateExp, HeureDebut, HeureFin, plat),
-    FOREIGN KEY (plat) REFERENCES MenuResto(name_plat)
+    PRIMARY KEY(Avis, plat),
+    FOREIGN KEY (Avis) REFERENCES AvisValid(IdAvis) -- Référence la table AvisValid
+);
+
+-- Création de la table ExperiencePlatRefuse
+CREATE TABLE IF NOT EXISTS ExperiencePlatRefuse (
+    Avis INT NOT NULL,
+    plat VARCHAR(100) NOT NULL,
+    PRIMARY KEY(Avis, plat),
+    FOREIGN KEY (Avis) REFERENCES AvisRefuse(IdAvis) -- Référence la table AvisRefuse
 );

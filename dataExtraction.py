@@ -1,6 +1,6 @@
 import mysql
 from mysql.connector import connect, Error
-from mysql.connector.errors import IntegrityError 
+import mysql.connector.errors 
 import xml.etree.ElementTree as El
 
 ##########################""
@@ -15,7 +15,7 @@ def create_connection():
         connection = connect(
             host="localhost",
             user='root',#input("Enter username: ")'',
-            password= 'bilal1601',#input("Enter password: "),
+            password= '2003',#input("Enter password: "),
             database="FastFood"
         )
         
@@ -48,8 +48,7 @@ def goodDataResto(street,number,city,zipcode,country,delivery,evaluation,price_r
     # Vérifie si le caractère est dans la liste des caractères spéciaux
     return noSpecialChar and goodDigit and goodHour and goodCountry and goodType and goodDelivery and goodNote
   
-def get_id(connection, table, ):
-    """renvoie le id pour une table"""
+
 def InsertInToTable(connection, table, columns, values):
     """
     Create an SQL request to insert data in a table.
@@ -149,34 +148,7 @@ def insertion(connection):
                         InsertInToTable(connection,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
             #############################################################
 
-def sql_get_id(connection, table, id, column, value):
-    """
-    Create an SQL request to get an id of a row in a table.
-    :param connection: the connection to the db
-    :param table: the name of the table to get an id
-    :param column: the name of the column of the table
-    :param value: the value to check
-    :return: id or None
-    """
-    cursor = connection.cursor()
-    sql = f"SELECT {id} FROM {table} WHERE {column} = (%s)"
-    try:
-        print(sql, (value,))
-        cursor.execute(sql, (value,))
-        result = cursor.fetchall()
-    except mysql.connector.IntegrityError as e:
-        connection.rollback()
-        if e.errno == 1062:
-            print(f"Duplicate entry: {value}")
-        elif e.errno == 1452:
-            print(f"No matching foreign key: {value}")
-        else:
-            print(f"ERROR: {value}, {e}")
-    finally:
-        cursor.close()
-        connection.commit()
-    
-    return None if not result else result[0][0]
+
 
 def main():
     connection = create_connection()

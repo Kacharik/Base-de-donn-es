@@ -4,8 +4,8 @@ import mysql.connector
 # Connexion à la base de données
 connexion = mysql.connector.connect(
     host="localhost",
-    user=input("Entrez le nom d'utilisateur : "),
-    password=input("Entrez le mot de passe : "),
+    user='root',#input("Enter username: ")'',
+    password= '2003',#input("Enter password: "),
     database="FastFood"
 )
 
@@ -19,10 +19,38 @@ def notSpecialChar(chaine):
             return False
     return True
 
-def goodDataResto(street):
+def goodData(street):
     noSpecialChar = notSpecialChar(street)
     return noSpecialChar
 
+def sql_get_id(connection, table, id, column, value):
+    """
+    Create an SQL request to get an id of a row in a table.
+    :param connection: the connection to the db
+    :param table: the name of the table to get an id
+    :param column: the name of the column of the table
+    :param value: the value to check
+    :return: id or None
+    """
+    cursor = connection.cursor()
+    sql = f"SELECT {id} FROM {table} WHERE {column} = (%s)"
+    try:
+        #print(sql, (value,))
+        cursor.execute(sql, (value,))
+        result = cursor.fetchall()
+    except mysql.connector.IntegrityError as e:
+        connection.rollback()
+        if e.errno == 1062:
+            print(f"Duplicate entry: {value}")
+        elif e.errno == 1452:
+            print(f"No matching foreign key: {value}")
+        else:
+            print(f"ERROR: {value}, {e}")
+    finally:
+        cursor.close()
+        connection.commit()
+    
+    return None if not result else result[0][0]
 
 def rest_extraction(data, cursor, connexion):
     for element in data:
@@ -39,13 +67,14 @@ def rest_extraction(data, cursor, connexion):
         number = address.get('number', '')
         country = address.get('country', '')
 
-        if(goodDataResto(street)):
+        if(goodData(street) and restaurant is not None and sql_get_id(connexion , "restaurant","restaurant","restaurant", restaurant) is not None):         
+            #verification s'il ya une cle correspodante dans le
             if (city.isdigit() and not zipcode.isdigit()):
                     city, zipcode = zipcode, city    
 
         # Insérer les données dans la table Restaurateur
-            query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
-            data_restaurateur = (nom, street, number, city, zipcode, country)
+            query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country, restaurant) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            data_restaurateur = (nom, street, number, city, zipcode, country, restaurant)
             cursor.execute(query_restaurateur, data_restaurateur)
             connexion.commit()
 
@@ -64,7 +93,7 @@ def client_extraction(data, cursor, connexion):
             number = address.get('number', '')
             country = address.get('country', '')
 
-            if(goodDataResto(street)):
+            if(goodData(street)):
                 if (city.isdigit() and not zipcode.isdigit()):
                     city, zipcode = zipcode, city    
 
@@ -92,7 +121,7 @@ def mod_extraction(data, cursor, connexion):
             number = address.get('number', '')
             country = address.get('country', '')
 
-            if(goodDataResto(street)):
+            if(goodData(street)):
                 if (city.isdigit() and not zipcode.isdigit()):
                     city, zipcode = zipcode, city     
 
@@ -103,8 +132,8 @@ def mod_extraction(data, cursor, connexion):
 
                 connexion.commit()
 
-
 def main():
+
     files = [
         r'AllData\restaurateur.json',
         r'AllData\customers.json',
@@ -116,8 +145,8 @@ def main():
         rest_extraction(data, cursor, connexion)
 
     with open(files[1]) as file:
-       data = json.load(file)
-       client_extraction(data, cursor, connexion)
+        data = json.load(file)
+    client_extraction(data, cursor, connexion)
 
     with open(files[2]) as file:
         data = json.load(file)
@@ -127,4 +156,4 @@ def main():
     cursor.close()
     connexion.close()
 
-main()
+main()          # extraction de client moderateur restaurateur
