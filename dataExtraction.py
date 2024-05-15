@@ -15,7 +15,7 @@ def create_connection():
         connection = connect(
             host="localhost",
             user='root',#input("Enter username: ")'',
-            password= '2003',#input("Enter password: "),
+            password= 'bilal1601',#input("Enter password: "),
             database="FastFood"
         )
         

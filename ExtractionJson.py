@@ -104,25 +104,27 @@ def mod_extraction(data, cursor, connexion):
                 connexion.commit()
 
 
+def main():
+    files = [
+        r'AllData\restaurateur.json',
+        r'AllData\customers.json',
+        r'AllData\moderators.json'
+    ]
 
-files = [
-    r'C:\Users\wayac\Downloads\ProjetBDD\ProjetBDD\AllData\restaurateur.json',
-    r'C:\Users\wayac\Downloads\ProjetBDD\ProjetBDD\AllData\customers.json',
-    r'C:\Users\wayac\Downloads\ProjetBDD\ProjetBDD\AllData\moderators.json'
-]
+    with open(files[0]) as file:
+        data = json.load(file)
+        rest_extraction(data, cursor, connexion)
 
-with open(files[0]) as file:
-    data = json.load(file)
-    rest_extraction(data, cursor, connexion)
+    with open(files[1]) as file:
+       data = json.load(file)
+       client_extraction(data, cursor, connexion)
 
-with open(files[1]) as file:
-   data = json.load(file)
-   client_extraction(data, cursor, connexion)
+    with open(files[2]) as file:
+        data = json.load(file)
+        mod_extraction(data, cursor, connexion)
 
-with open(files[2]) as file:
-    data = json.load(file)
-    mod_extraction(data, cursor, connexion)
+    # Fermer le curseur et la connexion
+    cursor.close()
+    connexion.close()
 
-# Fermer le curseur et la connexion
-cursor.close()
-connexion.close()
+main()
