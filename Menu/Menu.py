@@ -103,7 +103,7 @@ def Menu_principale(perso):
             print("Menu Principal Restaurateur :")
             print("------------------------------")
             print("1. Entrer un nouveau restaurant")
-            print("2. Consulter les avis de son restaurant")
+            print("2. Consulter les avis d'un restaurant")
             print("3. Requêtes demandées")
             print("4. Retour en arrière")
             print()
