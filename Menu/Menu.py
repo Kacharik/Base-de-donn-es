@@ -171,20 +171,25 @@ def Perso():
 
     return choix
 
-def User():
+def User(perso):
     good = False
     choix = ""
 
     while(not good):
         print("Veuillez choisir votre mode de connexion :")
         print("------------------------------------------")
-        print("Register")
+        if (perso == "Moderateur"):
+            print("Register")
         print("Login")
         print()
         choix = input()
         effacer_terminal()
-        if(choix == "Register" or choix == "Login"):
-            good = True
+        if(perso == "Moderateur"):
+            if(choix == "Login"):
+                good = True
+        else:
+            if(choix == "Register" or choix == "Login"):
+                good = True
 
     return choix
 
@@ -301,7 +306,7 @@ def Login(perso):
 
 def main():
     perso = Perso()
-    choix = User()
+    choix = User(perso)
     if(choix == "Register"):
         Register(perso)
     else:
