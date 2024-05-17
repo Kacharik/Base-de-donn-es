@@ -1,3 +1,4 @@
+import os
 def notSpecialChar(chaine):
     caracteres_speciaux = "!@#$%^&*()-_+=[]{}|;:',.<>?`~"
     for caractere in chaine:
@@ -11,3 +12,6 @@ def isDigit(chaine):
         if caractere not in number:
             return False
     return True
+
+def effacer_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')

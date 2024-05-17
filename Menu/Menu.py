@@ -1,4 +1,3 @@
-import os
 import mysql.connector
 from Restaurateur import *
 from Client import *
@@ -19,9 +18,6 @@ connexion = mysql.connector.connect(
     database="FastFood"
 )
 cursor = connexion.cursor()
-
-def effacer_terminal():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def Requete_demande(perso):
     good_choice = False
@@ -91,6 +87,7 @@ def Menu_principale(perso):
 
         elif(choix == "3"):
             Info_resto(cursor)
+            Menu_principale(perso)
 
         elif(choix == "4"):
             Requete_demande(perso)
