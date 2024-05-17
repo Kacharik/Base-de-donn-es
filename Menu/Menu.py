@@ -178,7 +178,7 @@ def User(perso):
     while(not good):
         print("Veuillez choisir votre mode de connexion :")
         print("------------------------------------------")
-        if (perso == "Moderateur"):
+        if (perso != "Moderateur"):
             print("Register")
         print("Login")
         print()
