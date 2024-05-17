@@ -114,6 +114,7 @@ def Menu_principale(perso):
 
         if(choix == "1"):
             New_resto(cursor)
+            Menu_principale(perso)
 
         elif(choix == "2"):
             Avis_resto(cursor)
