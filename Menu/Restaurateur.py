@@ -104,7 +104,7 @@ def New_resto(cursor):
             good_closing = True
 
 
-    query_client = "INSERT INTO Restaurant (restaurant, street, numero, city, zipcode, country, TypeResto, price_range, evaluation, Delivery, opening, closing) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query_client = "INSERT INTO Restaurant (restaurant, street, numero, city, zipcode, country, TypeResto, price_range, evaluation, Delivery, opening, closing) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     data_client = (name, street, number, city, zipcode, country, type, price, eval, delivery, opening, closing)
     cursor.execute(query_client, data_client)
 
