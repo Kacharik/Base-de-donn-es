@@ -15,7 +15,7 @@ def create_connection():
         connection = connect(
             host="localhost",
             user='root',#input("Enter username: ")'',
-            password= '2003',#input("Enter password: "),
+            password= 'BIGKARTH',#input("Enter password: "),
             database="FastFood"
         )
         
@@ -153,6 +153,7 @@ def insertion(connection):
 def main():
     connection = create_connection()
     insertion(connection)
+    print("Job done")
 main()
 
 

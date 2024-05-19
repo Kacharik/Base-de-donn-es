@@ -6,7 +6,6 @@ USE FastFood;
 CREATE TABLE IF NOT EXISTS Client (
     idClient INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
     street VARCHAR(100) NOT NULL, 
     numero INT NOT NULL,
     city VARCHAR(100) NOT NULL,
@@ -74,41 +73,40 @@ CREATE TABLE IF NOT EXISTS MenuResto (
 -- Création de la table Avis
 CREATE TABLE IF NOT EXISTS AvisValid (
     IdAvis INT AUTO_INCREMENT PRIMARY KEY,
-    Client INT NOT NULL,
-    restaurant VARCHAR(100) NOT NULL,
+    Client  INT NOT NULL,
+    restaurant  VARCHAR(100) NOT NULL,
     recommandation VARCHAR(100),
-    DateAvis DATETIME NOT NULL,              -- Utilisation du type DATETIME pour les dates
+    DateAvis VARCHAR(100) NOT NULL,
     commentaire TEXT,
-    DateExp DATE NOT NULL,      -- Utilisation du type DATETIME pour les dates
-    HeureDebut INT NOT NULL,
+    DateExp VARCHAR(100) NOT NULL,
+    HeureDebut INT NOT NULL, 
     HeureFin INT NOT NULL,
-    PrixTotal DECIMAL(10, 2) NOT NULL,  -- Utilisation de DECIMAL pour les valeurs monétaires
-    Cote INT NOT NULL,
-    Isdelivery INT NOT NULL,        -- Un booléen simulé avec INT
+    PrixTotal REAL NOT NULL, 
+    Cote INT NOT NULL, 
+    Isdelivery BOOLEAN NOT NULL, 
     CoteFeeling INT NOT NULL,
-    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),  -- Vérifiez le type de données dans la table Restaurant
-    FOREIGN KEY (Client) REFERENCES Client(idClient)             -- Assurez-vous que idClient existe dans la table Client
+    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
+    FOREIGN KEY (Client) REFERENCES Client(idClient)
 );
 -- Création de la table AvisRefuse
 CREATE TABLE IF NOT EXISTS AvisRefuse (
     IdAvis INT AUTO_INCREMENT PRIMARY KEY,
-    Client INT NOT NULL,
-    restaurant VARCHAR(100) NOT NULL,
+    Client  INT NOT NULL,
+    restaurant  VARCHAR(100) NOT NULL,
     recommandation VARCHAR(100),
-    DateAvis DATETIME NOT NULL,              -- Utilisation du type DATETIME pour les dates
+    DateAvis VARCHAR(100) NOT NULL,
     commentaire TEXT,
-    DateExp DATE NOT NULL,      -- Utilisation du type DATETIME pour les dates
-    HeureDebut INT NOT NULL,
+    DateExp VARCHAR(100) NOT NULL,
+    HeureDebut INT NOT NULL, 
     HeureFin INT NOT NULL,
-    PrixTotal DECIMAL(10, 2) NOT NULL,  -- Utilisation de DECIMAL pour les valeurs monétaires
-    Cote INT NOT NULL,
-    Isdelivery INT NOT NULL,        -- Un booléen simulé avec INT
+    PrixTotal REAL NOT NULL, 
+    Cote INT NOT NULL, 
+    Isdelivery BOOLEAN NOT NULL, 
     CoteFeeling INT NOT NULL,
     raison VARCHAR(100) NOT NULL,
-    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),  -- Vérifiez le type de données dans la table Restaurant
-    FOREIGN KEY (Client) REFERENCES Client(idClient)             -- Assurez-vous que idClient existe dans la table Client
+    FOREIGN KEY (restaurant) REFERENCES Restaurant(restaurant),
+    FOREIGN KEY (Client) REFERENCES Client(idClient)
 );
-
 
 -- Création de la table ExperiencePlatValid
 CREATE TABLE IF NOT EXISTS ExperiencePlatValid (

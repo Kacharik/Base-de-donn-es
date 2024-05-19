@@ -5,7 +5,7 @@ import mysql.connector
 connexion = mysql.connector.connect(
     host="localhost",
     user='root',#input("Enter username: ")'',
-    password= '2003',#input("Enter password: "),
+    password= 'BIGKARTH',#input("Enter password: "),
     database="FastFood"
 )
 
@@ -67,7 +67,7 @@ def rest_extraction(data, cursor, connexion):
         number = address.get('number', '')
         country = address.get('country', '')
 
-        if(goodData(street) and restaurant is not None and sql_get_id(connexion , "restaurant","restaurant","restaurant", restaurant) is not None):         
+        if(goodData(street) and restaurant is not None and sql_get_id(connexion , "Restaurant","restaurant","restaurant", restaurant) is not None):         
             #verification s'il ya une cle correspodante dans le
             if (city.isdigit() and not zipcode.isdigit()):
                     city, zipcode = zipcode, city    
@@ -85,6 +85,7 @@ def client_extraction(data, cursor, connexion):
         if 'firstname' in element and 'lastname' in element and 'address' in element:
             firstname = element['firstname']
             lastname = element['lastname']
+            name = f"{firstname} {lastname}"
             address = element['address']
 
             city = address.get('city', '')
@@ -99,8 +100,8 @@ def client_extraction(data, cursor, connexion):
 
 
             # Insérer les données dans la table Client
-                query_client = "INSERT INTO Client (nom, prenom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                data_client = (lastname, firstname, street, number, city, zipcode, country)
+                query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
+                data_client = (name, street, number, city, zipcode, country)
                 cursor.execute(query_client, data_client)
 
                 connexion.commit()
@@ -135,9 +136,9 @@ def mod_extraction(data, cursor, connexion):
 def main():
 
     files = [
-        r'AllData\restaurateur.json',
-        r'AllData\customers.json',
-        r'AllData\moderators.json'
+        r'AllData/restaurateur.json',
+        r'AllData/customers.json',
+        r'AllData/moderators.json'
     ]
 
     with open(files[0]) as file:
@@ -155,5 +156,6 @@ def main():
     # Fermer le curseur et la connexion
     cursor.close()
     connexion.close()
+    print("Extraction complete")
 
 main()          # extraction de client moderateur restaurateur
