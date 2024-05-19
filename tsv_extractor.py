@@ -12,7 +12,7 @@ def create_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="BIGKARTH",     # METTEZ VOS IDENTIFIANTS
+            password="2003",     # METTEZ VOS IDENTIFIANTS
             database="FastFood"
         )
         print("Connection successful")
@@ -23,47 +23,19 @@ def create_connection():
 
 #################################################################################################
 # OTHER FUNCTIONS
-################################################################################################
-
-def check_data(comment_type, review_text, rating, date_comment, recommendation, restaurant_name, isdelivery, d_h_rating, visit_date, items_ordered, cost, start, end, reason, client_id):
-    if comment_type == "deleted":
+def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, items_ordered, cost, start, end, reason):
         return (
-            isinstance(review_text, str) and 
             isinstance(rating, int) and
-            isinstance(date_comment, datetime) and
-            isinstance(recommendation, str) and 
-            isinstance(restaurant_name, str) and 
-            isinstance(isdelivery, int) and 
-            isinstance(d_h_rating, int) and 
-            isinstance(visit_date, datetime) and 
+            isinstance(date_comment, datetime) and isinstance(recommendation, str) and 
+            isinstance(d_h_rating, int) and isinstance(visit_date, datetime) and 
             isinstance(items_ordered, list) and all(isinstance(item, str) for item in items_ordered) and 
             isinstance(cost, float) and 
             isinstance(start, int) and 
             isinstance(end, int) and 
-            isinstance(reason, str) and 
-            isinstance(client_id, int)
+            isinstance(reason, str) and (start) < (end)
         )
-    elif comment_type == "valid":  #Doesnt have the reason for deletion
-        return (
-            isinstance(review_text, str) and 
-            isinstance(rating, int) and
-            isinstance(date_comment, datetime) and
-            isinstance(recommendation, str) and 
-            isinstance(restaurant_name, str) and 
-            isinstance(isdelivery, int) and 
-            isinstance(d_h_rating, int) and 
-            isinstance(visit_date, datetime) and 
-            isinstance(items_ordered, list) and all(isinstance(item, str) for item in items_ordered) and 
-            isinstance(cost, float) and 
-            isinstance(start, int) and 
-            isinstance(end, int) and 
-            isinstance(client_id, int)
-        )
-    else :
-        print("Comment type not properly specified")
-        return False
     
-
+################################################################################################
 def sql_get_id(connection, table, id, column, value):
     """
     Create an SQL request to get an id of a row in a table.
@@ -129,103 +101,98 @@ def insert_into_table(connection, table, columns, values):
 #              Extraction functions
 #############################################################################################
 
+     
 def extract_deleted_reviews(file_path, connection):
-    cursor = connection.cursor()
+    
+    columns = [
+        "Client", "restaurant", "recommandation", "DateAvis", "commentaire",
+        "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
+        "CoteFeeling", "raison"
+    ]
+    #cursor = connection.cursor()
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
         for line in file:
             fields = line.strip().split('\t')
-            if len(fields) != 13:
-                print("Erreur : Structure de données incorrecte.")
-                continue
-            #Les valeurs apres le else sont pour voir si ca marche ou pas
-            review_text = fields[0] 
-            rating = int(float(fields[1])) if len(fields[1]) == 1 else -1
-            date_comment = parse_date(fields[2]) if len(fields[2]) == (13 or 14 or 15 or 16 or 17)  else datetime.strptime("9999-12-31 00:00:01", "%Y-%m-%d %H:%M:%S")
-            print(date_comment)
-            recommendation = fields[3] if "éviter" in fields[3] or "recommandé" in fields[3] else 'INCORRECT VALUE'
-            restaurant_name = fields[4] 
-            isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
-            delivery_hospitality_rating = int(fields[5][-1])
-            visit_date = parse_date(fields[6]) if len(fields[6]) == (8 or 9 or 10)  else datetime.strptime("9999-12-31", "%Y-%m-%d")
-            items_ordered = fields[7].split(";") 
-            cost = float(fields[8]) if float(fields[8]) else 9999.99
-            start_time = int(fields[9]) if len(fields[9]) == 1 or len(fields[9]) == 2 else 24
-            end_time = int(fields[10]) if len(fields[10]) == 1 or len(fields[10]) == 2 else 24
-            reviewer_name = fields[11]
-            reason = fields[12]
-            client_id = sql_get_id(connection, "Client", "idCLient","nom", reviewer_name)
-            
-            if check_data("deleted", review_text, rating, date_comment,recommendation, restaurant_name, isdelivery, delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason, client_id):
-                # Define the columns and corresponding values for insertion
-
-                columns = [
-                    "Client", "restaurant", "recommandation", "DateAvis", "commentaire",
-                    "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
-                    "CoteFeeling", "raison"
-                ]
-                # remplacer 100 par id du client (avec son nom)
-                values = [
-                    client_id, restaurant_name, recommendation, visit_date, review_text,
-                    date_comment, start_time, end_time, cost, rating, isdelivery,
-                    delivery_hospitality_rating, reason
-                ]
-
-                # Insert into AvisRefuse table
-                print("hello thereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 3")
-                insert_into_table(connection, "AvisRefuse", columns, values)
+            if len(fields) == 13:               # le nom len d'un avis 
+                #Les valeurs apres le else sont pour voir si ca marche ou pas
+                review_text = fields[0] 
+                rating = fields[1]      # apres on check toutes les donnees
+                visit_date = fields[6]    
+                recommendation = fields[3]
+                restaurant_name = fields[4] 
+                isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
+                delivery_hospitality_rating = int(fields[5][-1])
+                date_comment = parse_date(fields[2])
+                items_ordered = fields[7].split(";") 
+                cost = fields[8]
+                start_time = fields[9]
+                end_time = int(fields[10])
+                reviewer_name = fields[11]
+                reason = fields[12]
+                infoclient = reviewer_name.split(" ")  # separation en nom et prenom   (prenom nom))
+                if (len(infoclient) == 2):
+                    IdClientPrenom = sql_get_id(connection, "Client", "idClient","prenom",infoclient[0]) 
+                    IdClientnom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
+                    resto = sql_get_id(connection,"restaurant","restaurant","restaurant",restaurant_name)
+                    # remplacer 100 par id du client (avec son nom)
+                    if (IdClientnom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientnom)):
+                        # faudrait que le prenom et le nom dirige vers le meme id de client 
+                        #if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
+                        values = [
+                            IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
+                             visit_date, start_time, end_time, cost, rating, isdelivery,
+                            delivery_hospitality_rating, reason
+                        ]
+                        # Insert into AvisRefuse table
+                        insert_into_table(connection, "AvisRefuse", columns, values)
 
 
 def extract_valid_reviews(file_path, connection):
-    cursor = connection.cursor()
+    columns = [
+                "Client", "restaurant", "recommandation", "DateAvis", "commentaire",
+                "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
+                "CoteFeeling",
+            ]
+    #cursor = connection.cursor()
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
         for line in file:
             fields = line.strip().split('\t')
-            if len(fields) != 12:
-                print("Erreur : Structure de données incorrecte.")
-                continue
-            #Les valeurs apres le else sont pour voir si ca marche ou pas
-            review_text = fields[0] 
-            rating = int(float(fields[1])) if len(fields[1]) == 1 else -1
-            date_comment = parse_date(fields[2]) if len(fields[2]) == (13 or 14 or 15 or 16 or 17)  else datetime.strptime("9999-12-31 00:00:01", "%Y-%m-%d %H:%M:%S")
-            print(date_comment)
-            recommendation = fields[3] if ("éviter" or "recommandé") in fields[3] else 'INCORRECT VALUE'
-            restaurant_name = fields[4] 
-            isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
-            delivery_hospitality_rating = int(fields[5][-1])
-            visit_date = parse_date(fields[6]) if len(fields[6]) == (8 or 9 or 10)  else datetime.strptime("9999-12-31", "%Y-%m-%d")
-            items_ordered = fields[7].split(";") 
-            cost = float(fields[8]) if float(fields[8]) else 9999.99
-            start_time = int(fields[9]) if len(fields[9]) == 1 or len(fields[9]) == 2 else 24
-            end_time = int(fields[10]) if len(fields[10]) == 1 or len(fields[10]) == 2 else 24
-            reviewer_name = fields[11]
-            client_id = sql_get_id(connection, "Client", "idCLient","nom", reviewer_name)
-            if client_id is None:
-                print(f"No client found with name: {reviewer_name}")
-            
-            if check_data("valid", review_text, rating, date_comment,recommendation, restaurant_name, isdelivery, delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, client_id):
-                # Define the columns and corresponding values for insertion
+            if len(fields) == 12:               # le nom len d'un avis 
+                #Les valeurs apres le else sont pour voir si ca marche ou pas
+                review_text = fields[0] 
+                rating = fields[1]      # apres on check toutes les donnees
+                visit_date = fields[6]    
+                recommendation = fields[3]
+                restaurant_name = fields[4] 
+                isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
+                delivery_hospitality_rating = int(fields[5][-1])
+                date_comment = parse_date(fields[2])
+                items_ordered = fields[7].split(";") 
+                cost = fields[8]
+                start_time = fields[9]
+                end_time = int(fields[10])
+                reviewer_name = fields[11]
+                infoclient = reviewer_name.split(" ")  # separation en nom et prenom   (prenom nom))
+                if (len(infoclient) == 2):
+                    IdClientPrenom = sql_get_id(connection, "Client", "idClient","prenom",infoclient[0]) 
+                    IdClientnom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
+                    resto = sql_get_id(connection,"restaurant","restaurant","restaurant",restaurant_name)
+                    # remplacer 100 par id du client (avec son nom)
+                    if (IdClientnom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientnom)):
+                        # faudrait que le prenom et le nom dirige vers le meme id de client 
+                        #if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
+                        values = [
+                            IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
+                             visit_date, start_time, end_time, cost, rating, isdelivery,
+                            delivery_hospitality_rating
+                        ]
+                        # Insert into AvisValid table
+                        insert_into_table(connection, "AvisValid", columns, values)
 
-                columns = [
-                    "Client", "restaurant", "recommandation", "DateAvis", "commentaire",
-                    "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
-                    "CoteFeeling",
-                ]
-                # remplacer 100 par id du client (avec son nom)
-                values = [
-                    client_id, restaurant_name, recommendation, visit_date, review_text,
-                    date_comment, start_time, end_time, cost, rating, isdelivery,
-                    delivery_hospitality_rating,
-                ]
 
-                # Insert into AvisRefuse table
-                print("hello thereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 3")
-                insert_into_table(connection, "AvisRefuse", columns, values)
 
-            
-
-            
 
 ###########################################################################
 # MAIN
@@ -241,9 +208,5 @@ def main():
         extract_valid_reviews(file_path_valid_reviews, connection)  
         connection.close()
 
-    # file_path_valid_reviews = "AllData/valid_comments.tsv"
-    # extract_valid_reviews(file_path_valid_reviews, connection)  # Pass 'cursor' and 'connection'
-    
-    # connection.close()
 
 main()
