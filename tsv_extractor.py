@@ -27,9 +27,9 @@ def create_connection():
 # ca fonctionne
 def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, items_ordered, cost, start, end, reason = "no reason"):
         return (
-            isinstance(rating, int) and
-            isinstance(date_comment, datetime) and isinstance(recommendation, str) and 
-            isinstance(d_h_rating, int) and isinstance(visit_date, datetime) and 
+            isinstance(rating, float) and
+            isinstance(date_comment, str) and isinstance(recommendation, str) and 
+            isinstance(d_h_rating, int) and isinstance(visit_date, str) and 
             isinstance(items_ordered, list) and all(isinstance(item, str) for item in items_ordered) and 
             isinstance(cost, float) and 
             isinstance(start, int) and 
@@ -125,16 +125,16 @@ def extract_deleted_reviews(file_path, connection):
             if len(fields) == 13:               # le nom len d'un avis 
                 #Les valeurs apres le else sont pour voir si ca marche ou pas
                 review_text = fields[0] 
-                rating = fields[1]      # apres on check toutes les donnees
+                rating = float(fields[1])      # apres on check toutes les donnees
                 visit_date = fields[6]    
                 recommendation = fields[3]
                 restaurant_name = fields[4] 
                 isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
                 delivery_hospitality_rating = int(fields[5][-1])
-                date_comment = parse_date(fields[2])
+                date_comment = fields[2]
                 items_ordered = fields[7].split(";") 
-                cost = fields[8]
-                start_time = fields[9]
+                cost = float(fields[8])
+                start_time = int(fields[9])
                 end_time = int(fields[10])
                 reviewer_name = fields[11]
                 reason = fields[12]
@@ -157,9 +157,12 @@ def extract_deleted_reviews(file_path, connection):
                             #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ne marche pas)
                             IdAvis = sql_get_id(connection, "AvisRefuse", "IdAvis", "restaurant", restaurant_name)
                             if IdAvis is not None:
+                                plats = []
                                 for plat in items_ordered:
-                                    valuesPlat = [IdAvis, plat]
-                                    insert_into_table(connection, "ExperiencePlatRefuse", columnsPlat, valuesPlat)
+                                    if plat not in plats:
+                                        plats.append(plat)
+                                        valuesPlat = [IdAvis, plat]
+                                        insert_into_table(connection, "ExperiencePlatRefuse", columnsPlat, valuesPlat)
                             else :
                                 error_count_plat_deleted += 1
                         else:
@@ -185,16 +188,16 @@ def extract_valid_reviews(file_path, connection):
             if len(fields) == 12:               # le nom len d'un avis 
                 #Les valeurs apres le else sont pour voir si ca marche ou pas
                 review_text = fields[0] 
-                rating = fields[1]      # apres on check toutes les donnees
+                rating = float(fields[1])      # apres on check toutes les donnees
                 visit_date = fields[6]    
                 recommendation = fields[3]
                 restaurant_name = fields[4] 
                 isdelivery = 0 if fields[5][1] == "H" else 1 # H pour Hospitality
                 delivery_hospitality_rating = int(fields[5][-1])
-                date_comment = parse_date(fields[2])
+                date_comment = fields[2]
                 items_ordered = fields[7].split(";") 
-                cost = fields[8]
-                start_time = fields[9]
+                cost = float(fields[8])
+                start_time = int(fields[9])
                 end_time = int(fields[10])
                 reviewer_name = fields[11]
                 infoclient = reviewer_name.split(" ")  # separation en nom et prenom   (prenom nom))
@@ -202,7 +205,6 @@ def extract_valid_reviews(file_path, connection):
                     IdClientPrenom = sql_get_id(connection, "Client", "idClient","prenom",infoclient[0]) 
                     IdClientnom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
                     resto = sql_get_id(connection,"Restaurant","restaurant","restaurant",restaurant_name)
-                    # remplacer 100 par id du client (avec son nom)
                     if (IdClientnom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientnom)):
                         # faudrait que le prenom et le nom dirige vers le meme id de client 
                         if (check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time)):
@@ -214,12 +216,16 @@ def extract_valid_reviews(file_path, connection):
                             # Insert into AvisValid table
                             insert_into_table(connection, "AvisValid", columns, values)
                         
-                            #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ne marche pas)
+                            #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ci-dessus ne marche pas)
                             IdAvis = sql_get_id(connection, "AvisValid", "IdAvis", "restaurant", restaurant_name)
                             if IdAvis is not None:
+                                plats = []
                                 for plat in items_ordered:
-                                    valuesPlat = [IdAvis, plat]
-                                    insert_into_table(connection, "ExperiencePlatValid", columnsPlat, valuesPlat)
+                                    if plat not in plats:
+                                        print(plats)
+                                        plats.append(plat)
+                                        valuesPlat = [IdAvis, plat]
+                                        insert_into_table(connection, "ExperiencePlatValid", columnsPlat, valuesPlat)
                             else:
                                 error_count_plat_valid += 1
                         else:
@@ -245,5 +251,5 @@ def main():
         extract_valid_reviews(file_path_valid_reviews, connection)  
         connection.close()
 
-
+    print("Job's done")
 main()
