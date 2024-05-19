@@ -12,7 +12,7 @@ def create_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="2003",     # METTEZ VOS IDENTIFIANTS
+            password="BIGKARTH",     # METTEZ VOS IDENTIFIANTS
             database="FastFood"
         )
         print("Connection successful")
@@ -23,7 +23,9 @@ def create_connection():
 
 #################################################################################################
 # OTHER FUNCTIONS
-def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, items_ordered, cost, start, end, reason):
+
+# ca fonctionne
+def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, items_ordered, cost, start, end, reason = "no reason"):
         return (
             isinstance(rating, int) and
             isinstance(date_comment, datetime) and isinstance(recommendation, str) and 
@@ -65,6 +67,7 @@ def sql_get_id(connection, table, id, column, value):
     
     return None if not result else result[0][0]
 
+#####################################################################################
 def parse_date(date_str):
     # Try to parse the date string in the given format
     try:
@@ -73,6 +76,7 @@ def parse_date(date_str):
         #print(f"Invalid date format: {date_str}")
         return None
 
+####################################################################################
 def insert_into_table(connection, table, columns, values):
     cursor = connection.cursor()
     qval = ', '.join(['%s'] * len(values))
@@ -109,7 +113,11 @@ def extract_deleted_reviews(file_path, connection):
         "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
         "CoteFeeling", "raison"
     ]
-    #cursor = connection.cursor()
+    columnsPlat = ["Avis", "plat"]
+
+    error_count_deleted = 0
+    error_count_plat_deleted = 0
+
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
         for line in file:
@@ -133,20 +141,32 @@ def extract_deleted_reviews(file_path, connection):
                 infoclient = reviewer_name.split(" ")  # separation en nom et prenom   (prenom nom))
                 if (len(infoclient) == 2):
                     IdClientPrenom = sql_get_id(connection, "Client", "idClient","prenom",infoclient[0]) 
-                    IdClientnom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
-                    resto = sql_get_id(connection,"restaurant","restaurant","restaurant",restaurant_name)
-                    # remplacer 100 par id du client (avec son nom)
-                    if (IdClientnom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientnom)):
+                    IdClientNom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
+                    resto = sql_get_id(connection,"Restaurant","restaurant","restaurant",restaurant_name)
+                    if (IdClientNom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientNom)):
                         # faudrait que le prenom et le nom dirige vers le meme id de client 
-                        #if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
-                        values = [
-                            IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
-                             visit_date, start_time, end_time, cost, rating, isdelivery,
-                            delivery_hospitality_rating, reason
-                        ]
-                        # Insert into AvisRefuse table
-                        insert_into_table(connection, "AvisRefuse", columns, values)
+                        if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
+                            values = [
+                                IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
+                                visit_date, start_time, end_time, cost, rating, isdelivery,
+                                delivery_hospitality_rating, reason
+                            ]
+                            # Insert into AvisRefuse table
+                            insert_into_table(connection, "AvisRefuse", columns, values)
 
+                            #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ne marche pas)
+                            IdAvis = sql_get_id(connection, "AvisRefuse", "IdAvis", "restaurant", restaurant_name)
+                            if IdAvis is not None:
+                                for plat in items_ordered:
+                                    valuesPlat = [IdAvis, plat]
+                                    insert_into_table(connection, "ExperiencePlatRefuse", columnsPlat, valuesPlat)
+                            else :
+                                error_count_plat_deleted += 1
+                        else:
+                            error_count_deleted += 1
+
+    print(error_count_deleted)
+    print(error_count_plat_deleted)
 
 def extract_valid_reviews(file_path, connection):
     columns = [
@@ -154,7 +174,10 @@ def extract_valid_reviews(file_path, connection):
                 "DateExp", "HeureDebut","HeureFin", "PrixTotal", "Cote", "Isdelivery",
                 "CoteFeeling",
             ]
-    #cursor = connection.cursor()
+    columnsPlat = ["Avis", "plat"]
+    error_count_valid = 0
+    error_count_plat_valid = 0
+    
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
         for line in file:
@@ -178,18 +201,32 @@ def extract_valid_reviews(file_path, connection):
                 if (len(infoclient) == 2):
                     IdClientPrenom = sql_get_id(connection, "Client", "idClient","prenom",infoclient[0]) 
                     IdClientnom  = sql_get_id(connection, "Client", "idClient","nom",infoclient[1]) 
-                    resto = sql_get_id(connection,"restaurant","restaurant","restaurant",restaurant_name)
+                    resto = sql_get_id(connection,"Restaurant","restaurant","restaurant",restaurant_name)
                     # remplacer 100 par id du client (avec son nom)
                     if (IdClientnom is not None and( resto is not None) and (IdClientPrenom is not None) and (IdClientPrenom == IdClientnom)):
                         # faudrait que le prenom et le nom dirige vers le meme id de client 
-                        #if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
-                        values = [
-                            IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
-                             visit_date, start_time, end_time, cost, rating, isdelivery,
-                            delivery_hospitality_rating
-                        ]
-                        # Insert into AvisValid table
-                        insert_into_table(connection, "AvisValid", columns, values)
+                        if (check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time)):
+                            values = [
+                                IdClientPrenom, restaurant_name, recommendation,date_comment, review_text,
+                                visit_date, start_time, end_time, cost, rating, isdelivery,
+                                delivery_hospitality_rating
+                            ]
+                            # Insert into AvisValid table
+                            insert_into_table(connection, "AvisValid", columns, values)
+                        
+                            #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ne marche pas)
+                            IdAvis = sql_get_id(connection, "AvisValid", "IdAvis", "restaurant", restaurant_name)
+                            if IdAvis is not None:
+                                for plat in items_ordered:
+                                    valuesPlat = [IdAvis, plat]
+                                    insert_into_table(connection, "ExperiencePlatValid", columnsPlat, valuesPlat)
+                            else:
+                                error_count_plat_valid += 1
+                        else:
+                            error_count_valid +=  1
+
+    print(error_count_valid)
+    print(error_count_plat_valid)
 
 
 
