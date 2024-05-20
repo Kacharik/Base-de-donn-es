@@ -122,6 +122,7 @@ def Menu_principale(perso, id):
 
         elif(choix == "2"):
             Avis_resto(cursor)
+            Menu_principale(perso, id)
 
         elif(choix == "3"):
             Requete_demande(perso)
@@ -136,21 +137,24 @@ def Menu_principale(perso, id):
         while (not good_choice):
             print("Menu Principal Moderateur :")
             print("------------------------------")
-            print("1. Consulter les Avis")
-            print("2. Requêtes demandées")
-            print("3. Retour en arrière")
+            print("1. Consulter les Avis valide")
+            print("2. Consulter les Avis refusé")
+            print("3. Requêtes demandées")
+            print("4. Retour en arrière")
             print()
             choix = input()
             effacer_terminal()
-            if (choix == "1" or choix == "2" or choix == "3"):
+            if (choix == "1" or choix == "2" or choix == "3" or choix == "4"):
                 good_choice = True
 
         if(choix == "1"):
-            Check_avis(cursor)
-
+            Check_avis(cursor, connexion)
+            Menu_principale(perso, id)
         elif(choix == "2"):
+            Consulter_avis_refuse(cursor)
+            Menu_principale(perso, id)
+        elif(choix == "3"):
             Requete_demande(perso)
-
         else:
             main()
 
@@ -258,7 +262,7 @@ def Register(perso):
     nom = firstname + lastname
 
     if(perso == "Client"):
-        query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
         data_client = (nom, street, number, city, zipcode, country)
         cursor.execute(query_client, data_client)
 
@@ -293,15 +297,16 @@ def Login(perso):
         print()
         first_name = input()
         effacer_terminal()
-        nom = first_name + " " + last_name
+        nom = first_name + last_name
+        nom_espace = first_name + " " + last_name
         if(perso == "Client"):
             cursor.execute("SELECT * FROM Client WHERE nom = '" + nom + "'")
             resultat = cursor.fetchall()
         elif(perso == "Restaurateur"):
-            cursor.execute("SELECT * FROM Restaurateur WHERE nom = '" + nom + "'")
+            cursor.execute("SELECT * FROM Restaurateur WHERE nom = '" + nom_espace + "'")
             resultat = cursor.fetchall()
         else:
-            cursor.execute("SELECT * FROM Moderateur WHERE nom = '" + nom + "'")
+            cursor.execute("SELECT * FROM Moderateur WHERE nom = '" + nom_espace + "'")
             resultat = cursor.fetchall()
 
         if(len(resultat) != 0):   #Requete qui vérifie si le Nom est dans la table du perso
