@@ -60,7 +60,7 @@ def Requete_demande(perso):
     else:
         Menu_principale(perso)
 
-def Menu_principale(perso, first_name, last_name):
+def Menu_principale(perso, id):
     if(perso == "Client"):
         good_choice = False
         choix = ""
@@ -80,14 +80,17 @@ def Menu_principale(perso, first_name, last_name):
                 good_choice = True
 
         if(choix == "1"):
-            Ajouter_avis(cursor, first_name, last_name)
+            Ajouter_avis(cursor, id)
+            connexion.commit()
+            Menu_principale(perso, id)
 
         elif(choix == "2"):
             Consulter_avis(cursor)
+            Menu_principale(perso, id)
 
         elif(choix == "3"):
             Info_resto(cursor)
-            Menu_principale(perso)
+            Menu_principale(perso, id)
 
         elif(choix == "4"):
             Requete_demande(perso)
@@ -114,7 +117,8 @@ def Menu_principale(perso, first_name, last_name):
 
         if(choix == "1"):
             New_resto(cursor)
-            Menu_principale(perso)
+            connexion.commit()
+            Menu_principale(perso, id)
 
         elif(choix == "2"):
             Avis_resto(cursor)
@@ -274,6 +278,7 @@ def Login(perso):
     good_name = False
     first_name = ""
     last_name = ""
+    id = 0
 
     while(not good_name):
         print("Connexion :")
@@ -301,7 +306,8 @@ def Login(perso):
 
         if(len(resultat) != 0):   #Requete qui vérifie si le Nom est dans la table du perso
             good_name = True
-    return first_name, last_name
+            id = int(resultat[0][0])
+    return id
 
 
 def main():
@@ -309,10 +315,12 @@ def main():
     choix = User(perso)
     if(choix == "Register"):
         Register(perso)
-        first_name, last_name = Login(perso)
+        id = Login(perso)
     else:
-        first_name, last_name = Login(perso)
+        id = Login(perso)
 
-    Menu_principale(perso, first_name, last_name)
+    Menu_principale(perso, id)
+
+    connexion.close()
 
 main()

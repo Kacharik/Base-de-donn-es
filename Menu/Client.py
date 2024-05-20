@@ -1,8 +1,9 @@
 from Check_data import *
 from datetime import datetime
 
-def Ajouter_avis(cursor, first_name, last_name):
+def Ajouter_avis(cursor, id):
     good_choice = False
+    restaurant = ""
     while(not good_choice):
         cursor.execute("SELECT restaurant FROM Restaurant")
         resultat = cursor.fetchall()
@@ -12,20 +13,11 @@ def Ajouter_avis(cursor, first_name, last_name):
         for ligne in resultat:
             print(ligne[0])
         print()
-        choix = input()
+        restaurant = input()
         effacer_terminal()
         for ligne in resultat:
-            if(choix == ligne[0]):
+            if(restaurant == ligne[0]):
                 good_choice = True
-
-    # Obtient la date et l'heure actuelles
-    date_actuelle = datetime.now()
-
-    # Formate la date et l'heure comme une chaîne de caractères
-    date_formatee = date_actuelle.strftime("%Y/%m/%d")
-
-    # Affiche la date et l'heure
-    print("Date et heure d'exécution du code :", date_formatee)
 
     good_recommandation = False
     good_commentaire = False
@@ -44,9 +36,9 @@ def Ajouter_avis(cursor, first_name, last_name):
     HeureFin = ""
     PrixTotal = ""
     Cote = ""
-    Isdelivery = ""
+    bool_delivery = True
     CoteFeeling = ""
-    '''
+
     while (not good_recommandation):
         print("Recommandation (recommander ou déconseiller) ?")
         recommandation = input()
@@ -59,78 +51,81 @@ def Ajouter_avis(cursor, first_name, last_name):
         effacer_terminal()
         if (True):
             good_commentaire = True
-    while (not good_city):
-        print("Ville ?")
-        city = input()
+    while (not good_DateExp):
+        print("A qu'elle date avez vous visiter ce restaurant (XXXX/XX/XX) ?")
+        DateExp = input()
         effacer_terminal()
-        if (notSpecialChar(city) and not isDigit(city)):
-            good_city = True
-    while (not good_zipcode):
-        print("Code postal ?")
-        zipcode = input()
+        if (isDate(DateExp)):
+            good_DateExp = True
+    while (not good_HeureDebut):
+        print("Heure de début ?")
+        HeureDebut = input()
         effacer_terminal()
-        if (isDigit(zipcode)):
-            good_zipcode = True
-    while (not good_country):
-        print("Pays ?")
-        country = input()
+        if (isDigit(HeureDebut) and int(HeureDebut) < 25):
+            good_HeureDebut = True
+    while (not good_HeureFin):
+        print("Heure de fin ?")
+        HeureFin = input()
         effacer_terminal()
-        if (country == "Belgium" or country == "France"):
-            good_country = True
-    while (not good_type):
-        print("Type de restaurant ?")
-        type = input()
-        effacer_terminal()
-        if (notSpecialChar(type) and not isDigit(type)):
-            good_type = True
-    while (not good_price):
-        print("Tranche de prix (haut, moyen ou bas) ?")
-        price = input()
-        effacer_terminal()
-        if (price == "bas" or price == "moyen" or price == "haut"):
-            good_price = True
-    while (not good_eval):
-        print("Evaluation ?")
-        eval = input()
+        if (isDigit(HeureFin) and int(HeureFin) > int(HeureDebut) and int(HeureFin) < 25):
+            good_HeureFin = True
+    while (not good_PrixTotal):
+        print("Prix totale ?")
+        PrixTotal = input()
         effacer_terminal()
         try:
-            if (float(eval) > 0.0 and float(eval) < 5.1):
-                good_eval = True
+            if (float(PrixTotal) > 0.0):
+                good_PrixTotal = True
         except ValueError:
             pass
-    while (not good_delivery):
-        print("Livraison (No ou Yes) ?")
-        delivery = input()
+    while (not good_Cote):
+        print("Cote ?")
+        Cote = input()
         effacer_terminal()
-        if (delivery == "No" or delivery == "Yes"):
-            good_delivery = True
-    while (not good_opening):
-        print("Heure d'ouverture ?")
-        opening = input()
+        if (isDigit(Cote)):
+            good_Cote = True
+    while (not good_Isdelivery):
+        print("Avez vous pris à emporter ou en livraison  (Yes ou No) ?")
+        Isdelivery = input()
         effacer_terminal()
-        if (isDigit(opening) and int(opening) > 0 and int(opening) < 25):
-            good_opening = True
-    while (not good_closing):
-        print("Heure de fermeture ?")
-        closing = input()
+        if (Isdelivery == "Yes" or Isdelivery == "No"):
+            if(Isdelivery == "Yes"):
+                Isdelivery = "Delivery"
+                bool_delivery = True
+            else:
+                Isdelivery = "Hospitality and service:"
+                bool_delivery = False
+            good_Isdelivery = True
+    while (not good_CoteFeeling):
+        print("Note du service ?")
+        CoteFeeling = input()
         effacer_terminal()
-        if (isDigit(closing) and int(opening) > 0 and int(opening) < 25 and int(closing) > int(opening)):
-            good_closing = True
+        if (isDigit(CoteFeeling)):
+            good_CoteFeeling = True
 
+    date_actuelle = datetime.now()
+    date_Avis = date_actuelle.strftime("%Y/%m/%d")
 
-    query_client = "INSERT INTO Restaurant (restaurant, street, numero, city, zipcode, country, TypeResto, price_range, evaluation, Delivery, opening, closing) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    data_client = (name, street, number, city, zipcode, country, type, price, eval, delivery, opening, closing)
+    query_client = "INSERT INTO AvisValid (Client, restaurant, recommandation, DateAvis, commentaire, DateExp, HeureDebut, HeureFin, PrixTotal, Cote, Isdelivery, CoteFeeling) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    data_client = (id, restaurant, recommandation, date_Avis, commentaire, DateExp, HeureDebut, HeureFin, PrixTotal, Cote, bool_delivery, CoteFeeling)
     cursor.execute(query_client, data_client)
-    '''
+
 def Consulter_avis(cursor):
-    '''
-    cursor.execute("SELECT * FROM AvisValid")
-    resultat = cursor.fetchall()
-    print("je suis la")
-    for ligne in resultat:
-        print(ligne)
-    '''
-    pass
+    good_choice = False
+    while(not good_choice):
+        cursor.execute("SELECT * FROM AvisValid")
+        resultat = cursor.fetchall()
+        print("Voici tout les Avis")
+        print("-------------------")
+        print()
+        for ligne in resultat:
+            print(ligne)
+        print()
+        print("Inscrivez 'back' pour retourner en arrière")
+        choix = input()
+        effacer_terminal()
+        if(choix == 'back'):
+            good_choice = True
 
 def Info_resto(cursor):
     good_choice = False
