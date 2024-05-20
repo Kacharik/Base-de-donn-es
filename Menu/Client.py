@@ -112,8 +112,25 @@ def Ajouter_avis(cursor, id):
 
 def Consulter_avis(cursor):
     good_choice = False
+    restaurant = ""
     while(not good_choice):
-        cursor.execute("SELECT * FROM AvisValid")
+        cursor.execute("SELECT restaurant FROM Restaurant")
+        resultat = cursor.fetchall()
+        print("Choisissez un restaurant")
+        print("------------------------")
+        print()
+        for ligne in resultat:
+            print(ligne[0])
+        print()
+        restaurant = input()
+        effacer_terminal()
+        for ligne in resultat:
+            if(restaurant == ligne[0]):
+                good_choice = True
+
+    good_choice = False
+    while(not good_choice):
+        cursor.execute("SELECT * FROM AvisValid WHERE restaurant = '" + restaurant + "'")
         resultat = cursor.fetchall()
         print("Voici tout les Avis")
         print("-------------------")
