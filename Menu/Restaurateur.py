@@ -136,6 +136,7 @@ def Avis_resto(cursor):
         print()
         for ligne in resultat:
             print(ligne)
+            print()
         print()
         print("Inscrivez 'back' pour retourner en arrière")
         choix = input()

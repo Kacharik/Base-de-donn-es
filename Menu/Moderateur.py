@@ -12,6 +12,7 @@ def Check_avis(cursor, connexion):
         print()
         for ligne in resultat:
             print(ligne)
+            print()
         print()
         print("Inscrivez l'id de l'avis à supprimer ou 'back' pour retourner en arrière")
         id = input()
@@ -52,6 +53,7 @@ def Consulter_avis_refuse(cursor):
         print()
         for ligne in resultat:
             print(ligne)
+            print()
         print()
         print("Inscrivez 'back' pour retourner en arrière")
         choix = input()
