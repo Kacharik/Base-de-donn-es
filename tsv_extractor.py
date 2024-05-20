@@ -38,7 +38,7 @@ def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, item
         )
     
 ################################################################################################
-def sql_get_id(connection, table, id, column, value):
+def sql_get_id(connection, table, id_column, *column_value_pairs):
     """
     Create an SQL request to get an id of a row in a table.
     :param connection: the connection to the db
@@ -48,19 +48,29 @@ def sql_get_id(connection, table, id, column, value):
     :return: id or None
     """
     cursor = connection.cursor()
-    sql = f"SELECT {id} FROM {table} WHERE {column} = (%s)"
+    if len(column_value_pairs) % 2 != 0:
+        raise ValueError("column_value_pairs must contain pairs of column names and values")
+
+    # Construct the WHERE clause dynamically
+    conditions = " AND ".join([f"{column_value_pairs[i]} = %s" for i in range(0, len(column_value_pairs), 2)])
+    values = tuple(column_value_pairs[i + 1] for i in range(0, len(column_value_pairs), 2))
+
+    sql = f"SELECT {id_column} FROM {table} WHERE {conditions}"
     try:
         #print(sql, (value,))
-        cursor.execute(sql, (value,))
+        cursor.execute(sql, values)
         result = cursor.fetchall()
     except mysql.connector.IntegrityError as e:
         connection.rollback()
         if e.errno == 1062:
-            print(f"Duplicate entry: {value}")
+            print(f"Duplicate entry: {values}")
         elif e.errno == 1452:
-            print(f"No matching foreign key: {value}")
+            print(f"No matching foreign key: {values}")
         else:
-            print(f"ERROR: {value}, {e}")
+            print(f"Integrity Error: {values}, {e}")
+    except mysql.connector.Error as e:
+        connection.rollback()
+        print(f"General SQL Error: {e}")
     finally:
         cursor.close()
         connection.commit()
@@ -129,11 +139,12 @@ def extract_deleted_reviews(file_path, connection):
     ]
     columnsPlat = ["Avis", "plat"]
 
-    count_middle = 0
+    
     count = 0
     count_total_deleted = 0
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
+        print("Starting deleted comments")
         for line in file:
             fields = line.strip().split('\t')
             if len(fields) == 13:               # le nom len d'un avis 
@@ -160,10 +171,9 @@ def extract_deleted_reviews(file_path, connection):
                      reviewer_name = temp[1] + temp[0]
                      IdClient= sql_get_id(connection, "Client", "idClient","nom", reviewer_name)
                 resto = sql_get_id(connection,"Restaurant","restaurant","restaurant",restaurant_name)
-                
                 if (IdClient is not None and( resto is not None)):
                     # faudrait que le prenom et le nom dirige vers le meme id de client
-                    count_middle += 1  
+                     
                     if(check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time, reason)):
                         values = [
                             IdClient, restaurant_name, recommendation,date_comment, review_text,
@@ -174,7 +184,7 @@ def extract_deleted_reviews(file_path, connection):
                         insert_into_table(connection, "AvisRefuse", columns, values)
                         count += 1
                         #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ne marche pas)
-                        IdAvis = sql_get_id(connection, "AvisRefuse", "IdAvis", "restaurant", restaurant_name)
+                        IdAvis = sql_get_id(connection, "AvisRefuse", "IdAvis", "Client", IdClient, "restaurant", restaurant_name, "DateAvis", date_comment)
                         if IdAvis is not None:
                             for plat in items_ordered:
                                 valuesPlat = [IdAvis, plat]
@@ -182,7 +192,6 @@ def extract_deleted_reviews(file_path, connection):
                                     insert_into_table(connection, "ExperiencePlatRefuse", columnsPlat, valuesPlat)
                         
     print("ctd : ", count_total_deleted)
-    print("count middle : ", count_middle)
     print("count : ", count)
 
 def extract_valid_reviews(file_path, connection):
@@ -193,11 +202,12 @@ def extract_valid_reviews(file_path, connection):
             ]
     columnsPlat = ["Avis", "plat"]
     
-    count_middle_accepted = 0
+    
     count = 0
     count_total_accepted = 0
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
+        print("Starting accepted comments")
         for line in file:
             fields = line.strip().split('\t')
             if len(fields) == 12:               # le nom len d'un avis 
@@ -226,7 +236,7 @@ def extract_valid_reviews(file_path, connection):
                 if (IdClient is not None and( resto is not None)):
                     # faudrait que le prenom et le nom dirige vers le meme id de client 
                     if (check_data(rating, date_comment, recommendation,delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time)):
-                        count_middle_accepted += 1
+                        
                         values = [
                             IdClient, restaurant_name, recommendation,date_comment, review_text,
                             visit_date, start_time, end_time, cost, rating, isdelivery,
@@ -236,7 +246,7 @@ def extract_valid_reviews(file_path, connection):
                         insert_into_table(connection, "AvisValid", columns, values)
                         count += 1
                         #insert into avis (Il faut l'ID de l'avis donc je continue dans ce if, pas possible si le if ci-dessus ne marche pas)
-                        IdAvis = sql_get_id(connection, "AvisValid", "IdAvis", "restaurant", restaurant_name)
+                        IdAvis = sql_get_id(connection, "AvisValid", "IdAvis", "Client", IdClient, "restaurant", restaurant_name, "DateAvis", date_comment)
                         if IdAvis is not None:
                             for plat in items_ordered:
                                 valuesPlat = [IdAvis, plat]
@@ -244,7 +254,7 @@ def extract_valid_reviews(file_path, connection):
                                     insert_into_table(connection, "ExperiencePlatValid", columnsPlat, valuesPlat)
                                     
     print("cta : ", count_total_accepted)  
-    print("count middle : ", count_middle_accepted)   
+      
     print("count :", count)               
 
     
