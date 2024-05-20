@@ -295,7 +295,7 @@ def Login(perso):
         effacer_terminal()
         nom = first_name + " " + last_name
         if(perso == "Client"):
-            cursor.execute("SELECT * FROM Client WHERE nom = '" + last_name + "' AND prenom = '" + first_name + "'")
+            cursor.execute("SELECT * FROM Client WHERE nom = '" + nom + "'")
             resultat = cursor.fetchall()
         elif(perso == "Restaurateur"):
             cursor.execute("SELECT * FROM Restaurateur WHERE nom = '" + nom + "'")
