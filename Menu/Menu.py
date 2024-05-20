@@ -258,8 +258,8 @@ def Register(perso):
     nom = firstname + lastname
 
     if(perso == "Client"):
-        query_client = "INSERT INTO Client (nom, prenom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        data_client = (lastname, firstname, street, number, city, zipcode, country)
+        query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        data_client = (nom, street, number, city, zipcode, country)
         cursor.execute(query_client, data_client)
 
     elif(perso == "Restaurateur"):
