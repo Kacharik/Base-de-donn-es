@@ -108,6 +108,59 @@ def New_resto(cursor):
     data_client = (name, street, number, city, zipcode, country, type, price, eval, delivery, opening, closing)
     cursor.execute(query_client, data_client)
 
+    good_choice = False
+    while (not good_choice):
+        print("Entrez 'o' pour ajouter un nouveau plat ou 'f' si vous n'avez plus de plat")
+        choice = input()
+        effacer_terminal()
+        if(choice == "o"):
+            good_plat = False
+            good_price = False
+            good_allergene = False
+            plat = ""
+            price = ""
+            allergene = ""
+
+            while (not good_plat):
+                print("Qu'elle est le nom du plat ?")
+                plat = input()
+                effacer_terminal()
+                if (notSpecialChar(plat)):
+                    good_plat = True
+            while (not good_price):
+                print("Le prix de ce plat ? (format: euro.centime")
+                price = input()
+                effacer_terminal()
+                if (True):
+                    price += "€"
+                    good_price = True
+            while (not good_allergene):
+                print("Ce plat à t'il un allergène ? (Yes or No)")
+                choix_allergene = input()
+                effacer_terminal()
+                if (choix_allergene == "Yes" or choix_allergene == "No"):
+                    if(choix_allergene == "Yes"):
+                        print("Qu'elle est l'allergène ?")
+                        allergene = input()
+                        effacer_terminal()
+                    else:
+                        allergene = "None"
+                    good_allergene = True
+
+            query_client = "INSERT INTO MenuResto (restaurant, name_plat, price) VALUES (%s, %s, %s)"
+            data_client = (name, plat, price)
+            cursor.execute(query_client, data_client)
+
+            if(allergene != "None"):
+                query_client = "INSERT INTO AllergenResto (restaurant, name_plat, allergen) VALUES (%s, %s, %s)"
+                data_client = (name, plat, allergene)
+                cursor.execute(query_client, data_client)
+
+        elif (choice == "f"):
+            good_choice = True
+        else:
+            pass
+
 
 def Avis_resto(cursor):
     good_choice = False
