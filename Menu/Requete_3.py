@@ -1,2 +1,2 @@
-def Requete_3():
+def Requete3(cursor):
     pass

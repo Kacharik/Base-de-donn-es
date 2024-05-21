@@ -40,22 +40,22 @@ def Requete_demande(perso):
             good_choice = True
 
     if(choix == "1"):
-        Requete1()
+        Requete1(cursor)
 
     elif(choix == "2"):
-        Requete2()
+        Requete2(cursor)
 
     elif(choix == "3"):
-        Requete_3()
+        Requete3(cursor)
 
     elif(choix == "4"):
-        Requete_4()
+        Requete4(cursor)
 
     elif(choix == "5"):
-        Requete_5()
+        Requete5(cursor)
 
     elif(choix == "6"):
-        Requete_6()
+        Requete6(cursor)
 
     else:
         Menu_principale(perso)
