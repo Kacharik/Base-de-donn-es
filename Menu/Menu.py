@@ -207,6 +207,7 @@ def Register(perso):
     good_city = False
     good_zipcode = False
     good_number = False
+    good_restaurant = False
 
     firstname = ""
     lastname = ""
@@ -215,6 +216,7 @@ def Register(perso):
     city = ""
     zipcode = ""
     number = ""
+    restaurant = ""
 
     while(not good_firstname):
         print("Qu'elle est votre Prenom ?")
@@ -258,8 +260,16 @@ def Register(perso):
         effacer_terminal()
         if(isDigit(number)):
             good_number = True
+    if(perso == "Restaurateur"):
+        while (not good_restaurant):
+            print("Quel est votre restauarant ?")
+            restaurant = input()
+            effacer_terminal()
+            if (notSpecialChar(restaurant)):
+                good_restaurant = True
 
     nom = firstname + lastname
+    nom_espace = firstname + " " + lastname
 
     if(perso == "Client"):
         query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -267,13 +277,13 @@ def Register(perso):
         cursor.execute(query_client, data_client)
 
     elif(perso == "Restaurateur"):
-        query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
-        data_restaurateur = (nom, street, number, city, zipcode, country)
+        query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country, restaurant) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        data_restaurateur = (nom_espace, street, number, city, zipcode, country, restaurant)
         cursor.execute(query_restaurateur, data_restaurateur)
 
     else:
         query_mod = "INSERT INTO Moderateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
-        data_mod = (nom, street, number, city, zipcode, country)
+        data_mod = (nom_espace, street, number, city, zipcode, country)
         cursor.execute(query_mod, data_mod)
 
     connexion.commit()
