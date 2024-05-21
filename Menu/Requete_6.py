@@ -1,2 +1,2 @@
-def Requete_6():
+def Requete6(cursor):
     pass

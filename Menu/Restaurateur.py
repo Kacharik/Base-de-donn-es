@@ -189,6 +189,12 @@ def Avis_resto(cursor):
         print()
         for ligne in resultat:
             print(ligne)
+            print("Plats Consommé :")
+            idAvis = ligne[0]
+            cursor.execute("SELECT * FROM ExperiencePlatValid WHERE Avis = '" + str(idAvis) + "'")
+            resultat2 = cursor.fetchall()
+            for ligne2 in resultat2:
+                print(ligne2)
             print()
         print()
         print("Inscrivez 'back' pour retourner en arrière")

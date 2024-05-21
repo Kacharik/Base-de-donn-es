@@ -110,6 +110,32 @@ def Ajouter_avis(cursor, id):
     data_client = (id, restaurant, recommandation, date_Avis, commentaire, DateExp, HeureDebut, HeureFin, PrixTotal, Cote, bool_delivery, CoteFeeling)
     cursor.execute(query_client, data_client)
 
+    cursor.execute("SELECT * FROM AvisValid WHERE Client = '" + str(id) + "' AND restaurant = '" + restaurant + "' AND commentaire = '" + commentaire + "'")
+    resultat = cursor.fetchall()
+    idAvis = resultat[0][0]
+
+    good_choice = False
+    while (not good_choice):
+        print("Entrez 'o' pour ajouter un plat consommé ou 'f' si vous n'avez plus de plat à ajouter")
+        choice = input()
+        effacer_terminal()
+        if (choice == "o"):
+            good_plat = False
+            plat = ""
+            while (not good_plat):
+                print("Qu'elle est le nom du plat ?")
+                plat = input()
+                effacer_terminal()
+                if (notSpecialChar(plat)):
+                    good_plat = True
+            query_client = "INSERT INTO ExperiencePlatValid (Avis, plat) VALUES (%s, %s)"
+            data_client = (idAvis, plat)
+            cursor.execute(query_client, data_client)
+
+        elif (choice == "f"):
+            good_choice = True
+        else:
+            pass
 def Consulter_avis(cursor):
     good_choice = False
     restaurant = ""
@@ -137,6 +163,12 @@ def Consulter_avis(cursor):
         print()
         for ligne in resultat:
             print(ligne)
+            print("Plats Consommé :")
+            idAvis = ligne[0]
+            cursor.execute("SELECT * FROM ExperiencePlatValid WHERE Avis = '" + str(idAvis) + "'")
+            resultat2 = cursor.fetchall()
+            for ligne2 in resultat2:
+                print(ligne2)
             print()
         print()
         print("Inscrivez 'back' pour retourner en arrière")
@@ -161,29 +193,30 @@ def Info_resto(cursor):
         restaurant = input()
         effacer_terminal()
         for ligne in resultat:
-            if(restaurant == ligne[0]):
+            if(restaurant == ligne[0] or restaurant == "back"):
                 good_choice = True
 
-    good_choice = False
-    while (not good_choice):
-        cursor.execute("SELECT * FROM MenuResto WHERE restaurant = '" + restaurant + "'")
-        resultat = cursor.fetchall()
-        print("Voici le Menu du restaurant '" + restaurant + "'")
-        print()
-        for ligne in resultat:
-            print(ligne[1:])
-        print()
+    if(restaurant != "back"):
+        good_choice = False
+        while (not good_choice):
+            cursor.execute("SELECT * FROM MenuResto WHERE restaurant = '" + restaurant + "'")
+            resultat = cursor.fetchall()
+            print("Voici le Menu du restaurant '" + restaurant + "'")
+            print()
+            for ligne in resultat:
+                print(ligne[1:])
+            print()
 
-        cursor.execute("SELECT * FROM AllergenResto WHERE restaurant = '" + restaurant + "'")
-        resultat = cursor.fetchall()
-        print("Voici les allergène du restaurant '" + restaurant + "'")
-        print()
-        for ligne in resultat:
-            print(ligne[1:])
-        print()
+            cursor.execute("SELECT * FROM AllergenResto WHERE restaurant = '" + restaurant + "'")
+            resultat = cursor.fetchall()
+            print("Voici les allergène du restaurant '" + restaurant + "'")
+            print()
+            for ligne in resultat:
+                print(ligne[1:])
+            print()
 
-        print("Inscrivez 'back' pour retourner en arrière")
-        choix = input()
-        effacer_terminal()
-        if (choix == 'back'):
-            good_choice = True
+            print("Inscrivez 'back' pour retourner en arrière")
+            choix = input()
+            effacer_terminal()
+            if (choix == 'back'):
+                good_choice = True

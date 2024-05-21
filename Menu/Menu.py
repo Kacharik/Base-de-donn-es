@@ -19,7 +19,7 @@ connexion = mysql.connector.connect(
 )
 cursor = connexion.cursor()
 
-def Requete_demande(perso):
+def Requete_demande(perso, id):
     good_choice = False
     choix = ""
 
@@ -40,25 +40,25 @@ def Requete_demande(perso):
             good_choice = True
 
     if(choix == "1"):
-        Requete_1()
+        Requete1(cursor)
 
     elif(choix == "2"):
-        Requete_2()
+        Requete2(cursor)
 
     elif(choix == "3"):
-        Requete_3()
+        Requete3(cursor)
 
     elif(choix == "4"):
-        Requete_4()
+        Requete4(cursor)
 
     elif(choix == "5"):
-        Requete_5()
+        Requete5(cursor)
 
     elif(choix == "6"):
-        Requete_6()
+        Requete6(cursor)
 
     else:
-        Menu_principale(perso)
+        Menu_principale(perso, id)
 
 def Menu_principale(perso, id):
     if(perso == "Client"):
@@ -93,7 +93,7 @@ def Menu_principale(perso, id):
             Menu_principale(perso, id)
 
         elif(choix == "4"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
 
         else:
             main()
@@ -125,7 +125,7 @@ def Menu_principale(perso, id):
             Menu_principale(perso, id)
 
         elif(choix == "3"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
 
         else:
             main()
@@ -154,7 +154,7 @@ def Menu_principale(perso, id):
             Consulter_avis_refuse(cursor)
             Menu_principale(perso, id)
         elif(choix == "3"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
         else:
             main()
 
@@ -207,6 +207,7 @@ def Register(perso):
     good_city = False
     good_zipcode = False
     good_number = False
+    good_restaurant = False
 
     firstname = ""
     lastname = ""
@@ -215,6 +216,7 @@ def Register(perso):
     city = ""
     zipcode = ""
     number = ""
+    restaurant = ""
 
     while(not good_firstname):
         print("Qu'elle est votre Prenom ?")
@@ -258,8 +260,16 @@ def Register(perso):
         effacer_terminal()
         if(isDigit(number)):
             good_number = True
+    if(perso == "Restaurateur"):
+        while (not good_restaurant):
+            print("Quel est votre restauarant ?")
+            restaurant = input()
+            effacer_terminal()
+            if (notSpecialChar(restaurant)):
+                good_restaurant = True
 
     nom = firstname + lastname
+    nom_espace = firstname + " " + lastname
 
     if(perso == "Client"):
         query_client = "INSERT INTO Client (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
@@ -267,13 +277,13 @@ def Register(perso):
         cursor.execute(query_client, data_client)
 
     elif(perso == "Restaurateur"):
-        query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
-        data_restaurateur = (nom, street, number, city, zipcode, country)
+        query_restaurateur = "INSERT INTO Restaurateur (nom, street, numero, city, zipcode, country, restaurant) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        data_restaurateur = (nom_espace, street, number, city, zipcode, country, restaurant)
         cursor.execute(query_restaurateur, data_restaurateur)
 
     else:
         query_mod = "INSERT INTO Moderateur (nom, street, numero, city, zipcode, country) VALUES (%s, %s, %s, %s, %s, %s)"
-        data_mod = (nom, street, number, city, zipcode, country)
+        data_mod = (nom_espace, street, number, city, zipcode, country)
         cursor.execute(query_mod, data_mod)
 
     connexion.commit()
