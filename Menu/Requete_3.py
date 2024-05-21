@@ -1,5 +1,3 @@
-import mysql.connector
-
 
 def Requete3(cursor):
     query = """

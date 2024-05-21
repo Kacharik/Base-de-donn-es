@@ -40,21 +40,23 @@ def Check_avis(cursor, connexion):
         cursor.execute(query_client, data_client)
         connexion.commit()
 
-        cursor.execute("DELETE FROM AvisValid WHERE IdAvis = '" + id + "'")
-        connexion.commit()
-
-        cursor.execute("SELECT * FROM ExperiencePlatValid WHERE Avis = '" + ligne[0] + "'")
+        cursor.execute("SELECT * FROM ExperiencePlatValid WHERE Avis = '" + str(ligne[0]) + "'")
         resultat2 = cursor.fetchall()
 
         for ligne2 in resultat2:
+            cursor.execute("SELECT * FROM AvisRefuse WHERE Client = '" + str(ligne[1]) + "' AND restaurant = '" + ligne[2] + "' AND commentaire = '" + ligne[5] + "'")
+            resultat3 = cursor.fetchall()
+            ligne3 = resultat3[0]
             query_client = "INSERT INTO ExperiencePlatRefuse (Avis, plat) VALUES (%s, %s)"
-            data_client = (ligne2[1], ligne2[2])
+            data_client = (ligne3[0], ligne2[1])
             cursor.execute(query_client, data_client)
             connexion.commit()
 
-            cursor.execute("DELETE FROM ExperiencePlatValid WHERE Avis = '" + ligne[0] + "' AND plat = '" + ligne2[2] + "'")
+            cursor.execute("DELETE FROM ExperiencePlatValid WHERE Avis = '" + str(ligne[0]) + "' AND plat = '" + ligne2[1] + "'")
             connexion.commit()
 
+        cursor.execute("DELETE FROM AvisValid WHERE IdAvis = '" + id + "'")
+        connexion.commit()
 
 
 def Consulter_avis_refuse(cursor):
