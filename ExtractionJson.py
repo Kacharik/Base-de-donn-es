@@ -157,3 +157,5 @@ def main():
     cursor.close()
     connexion.close()
     print("Extraction complete")    # extraction de client moderateur restaurateur
+
+main()
