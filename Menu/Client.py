@@ -40,10 +40,10 @@ def Ajouter_avis(cursor, id):
     CoteFeeling = ""
 
     while (not good_recommandation):
-        print("Recommandation (recommander ou déconseiller) ?")
+        print("Recommandation (recommandé ou déconseillé) ?")
         recommandation = input()
         effacer_terminal()
-        if (recommandation == "recommander" or recommandation == "déconseiller"):
+        if (recommandation == "recommandé" or recommandation == "déconseillé" or recommandation == "recommande" or recommandation == "deconseille"):
             good_recommandation = True
     while (not good_commentaire):
         print("Commentaire ?")
@@ -52,7 +52,7 @@ def Ajouter_avis(cursor, id):
         if (True):
             good_commentaire = True
     while (not good_DateExp):
-        print("A qu'elle date avez vous visiter ce restaurant (XXXX/XX/XX) ?")
+        print("À quelle date avez-vous  visité ce restaurant (XXXX/XX/XX) ?")
         DateExp = input()
         effacer_terminal()
         if (isDate(DateExp)):
@@ -70,7 +70,7 @@ def Ajouter_avis(cursor, id):
         if (isDigit(HeureFin) and int(HeureFin) > int(HeureDebut) and int(HeureFin) < 25):
             good_HeureFin = True
     while (not good_PrixTotal):
-        print("Prix totale ?")
+        print("Prix total ?")
         PrixTotal = input()
         effacer_terminal()
         try:
@@ -123,7 +123,7 @@ def Ajouter_avis(cursor, id):
             good_plat = False
             plat = ""
             while (not good_plat):
-                print("Qu'elle est le nom du plat ?")
+                print("Quel est le nom du plat ?")
                 plat = input()
                 effacer_terminal()
                 if (notSpecialChar(plat)):
@@ -158,12 +158,12 @@ def Consulter_avis(cursor):
     while(not good_choice):
         cursor.execute("SELECT * FROM AvisValid WHERE restaurant = '" + restaurant + "'")
         resultat = cursor.fetchall()
-        print("Voici tout les Avis")
+        print("Voici tous les avis")
         print("-------------------")
         print()
         for ligne in resultat:
             print(ligne)
-            print("Plats Consommé :")
+            print("Plats consommés :")
             idAvis = ligne[0]
             cursor.execute("SELECT * FROM ExperiencePlatValid WHERE Avis = '" + str(idAvis) + "'")
             resultat2 = cursor.fetchall()
@@ -183,13 +183,13 @@ def Info_resto(cursor):
     while(not good_choice):
         cursor.execute("SELECT * FROM Restaurant")
         resultat = cursor.fetchall()
-        print("Voici tout les restaurants")
+        print("Voici tous les restaurants")
         print("--------------------------")
         print()
         for ligne in resultat:
             print(ligne)
         print()
-        print("Inscrivez le nom d'un restaurant pour avoir son Menu et la liste de ces allergène ou 'back' pour retourner en arrière")
+        print("Inscrivez le nom d'un restaurant pour avoir son Menu et la liste de ses allergènes ou 'back' pour retourner en arrière")
         restaurant = input()
         effacer_terminal()
         for ligne in resultat:
@@ -209,7 +209,7 @@ def Info_resto(cursor):
 
             cursor.execute("SELECT * FROM AllergenResto WHERE restaurant = '" + restaurant + "'")
             resultat = cursor.fetchall()
-            print("Voici les allergène du restaurant '" + restaurant + "'")
+            print("Voici les allergènes du restaurant '" + restaurant + "'")
             print()
             for ligne in resultat:
                 print(ligne[1:])

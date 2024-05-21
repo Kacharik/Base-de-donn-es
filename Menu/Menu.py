@@ -69,8 +69,8 @@ def Menu_principale(perso, id):
             print("Menu Principal Client :")
             print("------------------------")
             print("1. Ajouter un avis")
-            print("2. Consulter les autres avis")
-            print("3. Consulter les info des restaurant")
+            print("2. Consulter les avis")
+            print("3. Consulter les informations des restaurants")
             print("4. Requêtes demandées")
             print("5. Retour en arrière")
             print()
@@ -137,8 +137,8 @@ def Menu_principale(perso, id):
         while (not good_choice):
             print("Menu Principal Moderateur :")
             print("------------------------------")
-            print("1. Consulter les Avis valide")
-            print("2. Consulter les Avis refusé")
+            print("1. Consulter les avis")
+            print("2. Consulter les avis effacés")
             print("3. Requêtes demandées")
             print("4. Retour en arrière")
             print()
@@ -164,7 +164,7 @@ def Perso():
 
     while(not good):
         effacer_terminal()
-        print("Veuillez choisir en tant que quoi vous voulez vous connecter :")
+        print("Veuillez choisir le rôle avec lequel vous souhaitez vous connecter :")
         print("--------------------------------------------------------------")
         print("Client")
         print("Restaurateur")
@@ -219,13 +219,13 @@ def Register(perso):
     restaurant = ""
 
     while(not good_firstname):
-        print("Qu'elle est votre Prenom ?")
+        print("Quel est votre prénom ?")
         firstname = input()
         effacer_terminal()
         if(notSpecialChar(firstname) and not isDigit(firstname)):
             good_firstname = True
     while(not good_lastname):
-        print("Qu'elle est votre Nom ?")
+        print("Quel est votre nom ?")
         lastname = input()
         effacer_terminal()
         if(notSpecialChar(lastname) and not isDigit(lastname)):
@@ -262,7 +262,7 @@ def Register(perso):
             good_number = True
     if(perso == "Restaurateur"):
         while (not good_restaurant):
-            print("Quel est votre restauarant ?")
+            print("Quel est le nom de votre restaurant ?")
             restaurant = input()
             effacer_terminal()
             if (notSpecialChar(restaurant)):
@@ -297,13 +297,13 @@ def Login(perso):
     while(not good_name):
         print("Connexion :")
         print("-----------")
-        print("!! Entrez votre Nom !!")
+        print("!! Entrez votre nom !!")
         print()
         last_name = input()
         effacer_terminal()
         print("Connexion :")
         print("-----------")
-        print("!! Entrez votre Prenom !!")
+        print("!! Entrez votre prenom !!")
         print()
         first_name = input()
         effacer_terminal()
