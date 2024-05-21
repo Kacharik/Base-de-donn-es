@@ -12,7 +12,7 @@ def create_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="BIGKARTH", #input("Entrez le mot de passe : "),     # METTEZ VOS IDENTIFIANTS
+            password=input("Entrez le mot de passe : "),     # METTEZ VOS IDENTIFIANTS
             database="FastFood"
         )
         print("Connection successful")
