@@ -40,10 +40,10 @@ def Requete_demande(perso):
             good_choice = True
 
     if(choix == "1"):
-        Requete_1()
+        Requete1()
 
     elif(choix == "2"):
-        Requete_2()
+        Requete2()
 
     elif(choix == "3"):
         Requete_3()
