@@ -12,7 +12,7 @@ def create_connection():
         connection = connect(
             host="localhost",
             user="root",    #input("Enter username: ")"",
-            password="BIGKARTH",#input("Enter password: "),
+            password=input("Enter password: "),
         )
         print("Connection successful")
         return connection
@@ -47,4 +47,6 @@ def main(ddlPath):
 
 
 ddl ="BDD_DDL.sql"
+
+
 main(ddl)

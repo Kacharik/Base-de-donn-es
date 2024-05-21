@@ -5,7 +5,7 @@ import mysql.connector
 connexion = mysql.connector.connect(
     host="localhost",
     user='root',#input("Enter username: ")'',
-    password= 'BIGKARTH',#input("Enter password: "),
+    password= input("Enter password: "),
     database="FastFood"
 )
 
@@ -156,6 +156,4 @@ def main():
     # Fermer le curseur et la connexion
     cursor.close()
     connexion.close()
-    print("Extraction complete")
-
-main()          # extraction de client moderateur restaurateur
+    print("Extraction complete")    # extraction de client moderateur restaurateur
