@@ -15,7 +15,7 @@ def create_connection():
         connection = connect(
             host="localhost",
             user='root',#input("Enter username: ")'',
-            password= input("Enter password: "),
+            password= '2003',#input("Enter password: "),
             database="FastFood"
         )
         
@@ -28,25 +28,21 @@ def create_connection():
 #################################################################################################
 #CONNEXION ETABLIE
 def notSpecialChar(chaine):
-    caracteres_speciaux = "!@#$%^&*()-_+=[]{}|;:',.<>?`~"
+    caracteres_speciaux = "[]"
     for caractere in chaine:
         if caractere in caracteres_speciaux:
             return False
     return True
 
-def goodDataResto(street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing):
+def goodDataResto(street,delivery,evaluation,opening,closing):
     # verifier si toutes les donnees pour un restaurant sont valides 
-    noSpecialChar = notSpecialChar(street) and notSpecialChar(city)and \
-    notSpecialChar(zipcode) and notSpecialChar(Type) and notSpecialChar(opening) and \
-    notSpecialChar(closing)
+    noSpecialChar = notSpecialChar(street)
     goodNote = 0<= float(evaluation) <=5                # si l'evaluation est correct et a un sens 
-    goodType = price_range in ("moyen", "haut","bas")
-    goodCountry = country in ("France", "Belgium")
-    goodDelivery = delivery in("Yes", "No") or delivery in("yes", "no")         # tester le isUper() or les isLower()
-    goodHour = opening < closing
-    goodDigit = number.isdigit()
+    #goodType = price_range in ("moyen", "haut","bas")
+    goodHour = int(opening) < int(closing)
+    #goodDigit = number.isdigit()
     # Vérifie si le caractère est dans la liste des caractères spéciaux
-    return noSpecialChar and goodDigit and goodHour and goodCountry and goodType and goodDelivery and goodNote
+    return noSpecialChar and goodHour and goodNote
   
 
 def InsertInToTable(connection, table, columns, values):
@@ -123,21 +119,21 @@ def insertion(connection):
         opening = opening_hours.find("opening").text.strip()
         closing = opening_hours.find("closing").text.strip()
               
-        if(goodDataResto(street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing)):
+        if(goodDataResto(street,delivery,evaluation,opening,closing)):
             if (city.isdigit() and not zipcode.isdigit()):
                 city, zipcode = zipcode, city           #on swap les deux
             InsertInToTable(connection,tableResto,columnResto,(resto,street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing))
-        
+  
     #############################################################
 
         ## INFORMATIONS SUR LES PLATS 
             menu = restaurant.find("menu")
             for dish in menu.findall("dish"):
                 name_plat = dish.find("name").text.strip()
-                price = dish.find("price").text.strip()
+                price = (dish.find("price").text.strip())                     # par exemple 17.7
             
                # InsertInToTable(connection,tablePlat,columnPlat,(name_plat,price))         # faire un insert dans la table plat
-                InsertInToTable(connection,tableMenuResto,columnMenu,(resto,name_plat,price))         #insert dans la table menuPlat
+                InsertInToTable(connection,tableMenuResto,columnMenu,(resto,name_plat,price[:-1]))         #insert dans la table menuPlat
             
             #############################################################
         # INFORMATIONS SUR PLAT ALLERGENES
@@ -145,10 +141,9 @@ def insertion(connection):
                     all = allergen.find("allergen")
                     if (all is not None):                    # s'il ya toujours un allergene 
                         allergen_name = all.text.strip()
-                        InsertInToTable(connection,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
+                    InsertInToTable(connection,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
             #############################################################
-
-
+        
 
 def main():
     connection = create_connection()
