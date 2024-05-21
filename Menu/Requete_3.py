@@ -15,7 +15,7 @@ def Requete3(cursor):
     cursor.execute(query)
     results = cursor.fetchall()
 
-    print("The top 10 clients who have consumed the most Mexican dishes are:")
+    print("Les 10 clients qui ont consommé le plus de plats mexicains sont:")
     for client in results:
-        print(f"{client[0]} - Total Mexican dishes: {client[1]}")
+        print(f"{client[0]} - Total plats Mexican: {client[1]}")
 
