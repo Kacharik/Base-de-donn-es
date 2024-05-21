@@ -110,6 +110,32 @@ def Ajouter_avis(cursor, id):
     data_client = (id, restaurant, recommandation, date_Avis, commentaire, DateExp, HeureDebut, HeureFin, PrixTotal, Cote, bool_delivery, CoteFeeling)
     cursor.execute(query_client, data_client)
 
+    cursor.execute("SELECT * FROM AvisValid WHERE Client = '" + str(id) + "' AND restaurant = '" + restaurant + "'")
+    resultat = cursor.fetchall()
+    idAvis = resultat[0][0]
+
+    good_choice = False
+    while (not good_choice):
+        print("Entrez 'o' pour ajouter un plat consommé ou 'f' si vous n'avez plus de plat à ajouter")
+        choice = input()
+        effacer_terminal()
+        if (choice == "o"):
+            good_plat = False
+            plat = ""
+            while (not good_plat):
+                print("Qu'elle est le nom du plat ?")
+                plat = input()
+                effacer_terminal()
+                if (notSpecialChar(plat)):
+                    good_plat = True
+            query_client = "INSERT INTO ExperiencePlatValid (Avis, plat) VALUES (%s, %s)"
+            data_client = (idAvis, plat)
+            cursor.execute(query_client, data_client)
+
+        elif (choice == "f"):
+            good_choice = True
+        else:
+            pass
 def Consulter_avis(cursor):
     good_choice = False
     restaurant = ""
