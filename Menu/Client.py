@@ -193,29 +193,30 @@ def Info_resto(cursor):
         restaurant = input()
         effacer_terminal()
         for ligne in resultat:
-            if(restaurant == ligne[0]):
+            if(restaurant == ligne[0] or restaurant == "back"):
                 good_choice = True
 
-    good_choice = False
-    while (not good_choice):
-        cursor.execute("SELECT * FROM MenuResto WHERE restaurant = '" + restaurant + "'")
-        resultat = cursor.fetchall()
-        print("Voici le Menu du restaurant '" + restaurant + "'")
-        print()
-        for ligne in resultat:
-            print(ligne[1:])
-        print()
+    if(restaurant != "back"):
+        good_choice = False
+        while (not good_choice):
+            cursor.execute("SELECT * FROM MenuResto WHERE restaurant = '" + restaurant + "'")
+            resultat = cursor.fetchall()
+            print("Voici le Menu du restaurant '" + restaurant + "'")
+            print()
+            for ligne in resultat:
+                print(ligne[1:])
+            print()
 
-        cursor.execute("SELECT * FROM AllergenResto WHERE restaurant = '" + restaurant + "'")
-        resultat = cursor.fetchall()
-        print("Voici les allergène du restaurant '" + restaurant + "'")
-        print()
-        for ligne in resultat:
-            print(ligne[1:])
-        print()
+            cursor.execute("SELECT * FROM AllergenResto WHERE restaurant = '" + restaurant + "'")
+            resultat = cursor.fetchall()
+            print("Voici les allergène du restaurant '" + restaurant + "'")
+            print()
+            for ligne in resultat:
+                print(ligne[1:])
+            print()
 
-        print("Inscrivez 'back' pour retourner en arrière")
-        choix = input()
-        effacer_terminal()
-        if (choix == 'back'):
-            good_choice = True
+            print("Inscrivez 'back' pour retourner en arrière")
+            choix = input()
+            effacer_terminal()
+            if (choix == 'back'):
+                good_choice = True

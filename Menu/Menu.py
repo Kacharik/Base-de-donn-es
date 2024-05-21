@@ -19,7 +19,7 @@ connexion = mysql.connector.connect(
 )
 cursor = connexion.cursor()
 
-def Requete_demande(perso):
+def Requete_demande(perso, id):
     good_choice = False
     choix = ""
 
@@ -58,7 +58,7 @@ def Requete_demande(perso):
         Requete6(cursor)
 
     else:
-        Menu_principale(perso)
+        Menu_principale(perso, id)
 
 def Menu_principale(perso, id):
     if(perso == "Client"):
@@ -93,7 +93,7 @@ def Menu_principale(perso, id):
             Menu_principale(perso, id)
 
         elif(choix == "4"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
 
         else:
             main()
@@ -125,7 +125,7 @@ def Menu_principale(perso, id):
             Menu_principale(perso, id)
 
         elif(choix == "3"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
 
         else:
             main()
@@ -154,7 +154,7 @@ def Menu_principale(perso, id):
             Consulter_avis_refuse(cursor)
             Menu_principale(perso, id)
         elif(choix == "3"):
-            Requete_demande(perso)
+            Requete_demande(perso, id)
         else:
             main()
 
