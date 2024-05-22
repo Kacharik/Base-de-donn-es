@@ -1,4 +1,4 @@
-
+from Check_data import *
 def Requete3(cursor):
     query = """
         SELECT c.nom, COUNT(av.IdAvis) AS total_plats_mexicanos
@@ -17,3 +17,11 @@ def Requete3(cursor):
     for client in results:
         print(f"{client[0]} - Total plats Mexican: {client[1]}")
 
+    print()
+    good_choice = False
+    while(not good_choice):
+        print("Inscrivez 'back' pour retourner en arrière")
+        choix = input()
+        effacer_terminal()
+        if(choix == 'back'):
+            good_choice = True

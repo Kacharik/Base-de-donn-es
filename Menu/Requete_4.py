@@ -1,3 +1,4 @@
+from Check_data import *
 def Requete4(cursor):
     query = """
     SELECT 
@@ -27,3 +28,12 @@ def Requete4(cursor):
     print("Le restaurant non-asiatique proposant le plus de plats qui sont généralement proposés dans des restaurant asiatiques est:")
     for client in results:
         print(f"{client[0]} qui propose {client[1]} plats asiatiques")
+
+    print()
+    good_choice = False
+    while(not good_choice):
+        print("Inscrivez 'back' pour retourner en arrière")
+        choix = input()
+        effacer_terminal()
+        if(choix == 'back'):
+            good_choice = True

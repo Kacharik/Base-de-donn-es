@@ -1,3 +1,4 @@
+from Check_data import *
 def Requete5(cursor):
     query = """
     SELECT 
@@ -18,3 +19,12 @@ def Requete5(cursor):
     print("Le code postal de la ville dans laquelle les restaurants sont les moins bien notés en moyenne est:")
     for client in results:
         print(f"{client[1]}")
+
+    print()
+    good_choice = False
+    while(not good_choice):
+        print("Inscrivez 'back' pour retourner en arrière")
+        choix = input()
+        effacer_terminal()
+        if(choix == 'back'):
+            good_choice = True

@@ -1,4 +1,4 @@
-
+from Check_data import *
 def Requete6(cursor):
     for number in range(5):
         query = "SELECT DISTINCT TypeResto FROM Restaurant WHERE evaluation >= " + str(number+1) + " AND evaluation < " + str(number+2)
@@ -14,3 +14,12 @@ def Requete6(cursor):
                     compteur_type[type_resto] = 1
             type_present = max(compteur_type, key=compteur_type.get)
             print(f"Le type de restaurant le plus présent est {type_present} pour la tranche " + str(number+1) + "/5")
+
+    print()
+    good_choice = False
+    while(not good_choice):
+        print("Inscrivez 'back' pour retourner en arrière")
+        choix = input()
+        effacer_terminal()
+        if(choix == 'back'):
+            good_choice = True
