@@ -153,6 +153,7 @@ def extract_reviews(file_path, connection, table_name, columns, columnsPlat, has
         for line in file:
             fields = line.strip().split('\t')
             expected_length = 13 if has_reason else 12
+            
             if len(fields) == expected_length:
                 count_total += 1
                 review_text = fields[0]
@@ -171,17 +172,21 @@ def extract_reviews(file_path, connection, table_name, columns, columnsPlat, has
                 reason = fields[12] if has_reason else None
 
                 IdClient = sql_get_id(connection, "Client", "idClient", "nom", reviewer_name)
+                resto = sql_get_id(connection, "Restaurant", "restaurant", "restaurant", restaurant_name)
+                # ON TRAITE PLUSIEURS ERREURS POSSIBLES DANS LE NOM
+
                 if IdClient is None and len(reviewer_name.split(" ")) == 2:
                     temp = reviewer_name.split(" ")
-                    reviewer_name = temp[1] + temp[0]
-                    IdClient = sql_get_id(connection, "Client", "idClient", "nom", reviewer_name)
-                resto = sql_get_id(connection, "Restaurant", "restaurant", "restaurant", restaurant_name)
+                    var1 = temp[1] + temp[0]
+                    IdClient = sql_get_id(connection, "Client", "idClient", "nom", var1)
+
+                if IdClient is None and (" " not in reviewer_name):
+                    var2 = reviewer_name + " "
+                    IdClient = sql_get_id(connection, "Client", "idClient", "nom", var2)
                 
-                if resto is None:
-                    counter +=1
-                    print(" Not inserted : ", restaurant_name)
                 if IdClient is not None and resto is not None:
                     if check_data(rating, date_comment, recommendation, delivery_hospitality_rating, visit_date, items_ordered, cost, start_time, end_time):
+
                         values = [
                             IdClient, restaurant_name, recommendation, date_comment, review_text,
                             visit_date, start_time, end_time, cost, rating, isdelivery,
@@ -190,7 +195,7 @@ def extract_reviews(file_path, connection, table_name, columns, columnsPlat, has
                         if has_reason:
                             values.append(reason)
 
-                        # Insert into the specified table
+                        # INSERTING INTO TABLE
                         insert_into_table(connection, table_name, columns, values)
                         count += 1
                         # Get the ID of the inserted review
@@ -198,7 +203,9 @@ def extract_reviews(file_path, connection, table_name, columns, columnsPlat, has
                         if IdAvis is not None:
                             for plat in items_ordered:
                                 valuesPlat = [IdAvis, plat]
+
                                 if not check_duplicate_entry(connection, f"ExperiencePlat{table_name[4:]}", columnsPlat, valuesPlat):
+                                    
                                     insert_into_table(connection, f"ExperiencePlat{table_name[4:]}", columnsPlat, valuesPlat)
 
     print(f"Total processed for {table_name}: ", count_total)

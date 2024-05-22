@@ -5,7 +5,7 @@ import mysql.connector
 connexion = mysql.connector.connect(
     host="localhost",
     user='root',#input("Enter username: ")'',
-    password= input("Enter password: "),
+    password= 'BIGKARTH', #input("Enter password: "),
     database="FastFood"
 )
 
