@@ -41,21 +41,27 @@ def Requete_demande(perso, id):
 
     if(choix == "1"):
         Requete1(cursor)
+        Requete_demande(perso, id)
 
     elif(choix == "2"):
         Requete2(cursor)
+        Requete_demande(perso, id)
 
     elif(choix == "3"):
         Requete3(cursor)
+        Requete_demande(perso, id)
 
     elif(choix == "4"):
         Requete4(cursor)
+        Requete_demande(perso, id)
 
     elif(choix == "5"):
         Requete5(cursor)
+        Requete_demande(perso, id)
 
     elif(choix == "6"):
         Requete6(cursor)
+        Requete_demande(perso, id)
 
     else:
         Menu_principale(perso, id)
