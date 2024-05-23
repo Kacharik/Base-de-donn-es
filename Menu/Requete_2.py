@@ -1,8 +1,7 @@
 from Check_data import *
 def Requete2(cursor):
-    query = """SELECT r.restaurant FROM Restaurant r
-            JOIN MenuResto mr ON r.restaurant = mr.restaurant
-            WHERE mr.price = (SELECT MAX(price) FROM MenuResto);"""
+    query = """SELECT restaurant FROM MenuResto 
+            WHERE price = (SELECT MAX(price) FROM MenuResto);"""
     cursor.execute(query)
 
     result = cursor.fetchall()

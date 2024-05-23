@@ -175,12 +175,12 @@ def Perso():
         print("Client")
         print("Restaurateur")
         print("Moderateur")
+        print("Exit")
         print()
         choix = input()
         effacer_terminal()
         if(choix == "Client" or choix == "Restaurateur" or choix == "Moderateur"):
             good = True
-
     return choix
 
 def User(perso):
@@ -202,7 +202,6 @@ def User(perso):
         else:
             if(choix == "Register" or choix == "Login"):
                 good = True
-
     return choix
 
 def Register(perso):
