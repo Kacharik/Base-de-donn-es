@@ -118,27 +118,34 @@ def insertion(connection, cursor):
         if(goodDataResto(street,delivery,evaluation,opening,closing)):
             if (city.isdigit() and not zipcode.isdigit()):
                 city, zipcode = zipcode, city           #on swap les deux
-            InsertInToTable(connection,cursor,tableResto,columnResto,(resto,street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing))
-  
-    #############################################################
+            try:
+                InsertInToTable(connection,cursor,tableResto,columnResto,(resto,street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing))
 
-        ## INFORMATIONS SUR LES PLATS 
-            menu = restaurant.find("menu")
-            for dish in menu.findall("dish"):
-                name_plat = dish.find("name").text.strip()
-                price = (dish.find("price").text.strip())                     # par exemple 17.7
-            
-               # InsertInToTable(connection,tablePlat,columnPlat,(name_plat,price))         # faire un insert dans la table plat
-                InsertInToTable(connection,cursor,tableMenuResto,columnMenu,(resto,name_plat,price[:-1]))         #insert dans la table menuPlat
-            
-            #############################################################
-        # INFORMATIONS SUR PLAT ALLERGENES
-                for allergen in dish.findall("allergens"):
-                    all = allergen.find("allergen")
-                    if (all is not None):                    # s'il ya toujours un allergene 
-                        allergen_name = all.text.strip()
-                    InsertInToTable(connection,cursor,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
-            #############################################################
+        #############################################################
+
+            ## INFORMATIONS SUR LES PLATS 
+
+                menu = restaurant.find("menu")
+                for dish in menu.findall("dish"):
+                    name_plat = dish.find("name").text.strip()
+                    price = (dish.find("price").text.strip())                     # par exemple 17.7
+                
+                    # InsertInToTable(connection,tablePlat,columnPlat,(name_plat,price))         # faire un insert dans la table plat
+                    InsertInToTable(connection,cursor,tableMenuResto,columnMenu,(resto,name_plat,price[:-1]))         #insert dans la table menuPlat
+                
+                #############################################################
+            # INFORMATIONS SUR PLAT ALLERGENES
+                    for allergen in dish.findall("allergens"):
+                        all = allergen.find("allergen")
+                        if (all is not None):                    # s'il ya toujours un allergene 
+                            allergen_name = all.text.strip()
+                        InsertInToTable(connection,cursor,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
+                #############################################################
+                connection.commit()
+            except mysql.connector.Error as err:
+                print(f"Error: {err}")
+                connection.rollback()
+                continue  # Continue to the next restaurant
         
 
 def main():
