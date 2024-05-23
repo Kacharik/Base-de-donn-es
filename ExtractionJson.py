@@ -158,4 +158,5 @@ def main():
     connexion.close()
     print("Extraction complete")    # extraction de client moderateur restaurateur
 
-main()
+if __name__ == "__main__":
+    main()

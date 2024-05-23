@@ -45,7 +45,7 @@ def goodDataResto(street,delivery,evaluation,opening,closing):
     return noSpecialChar and goodHour and goodNote
   
 
-def InsertInToTable(connection, table, columns, values):
+def InsertInToTable(connection, cursor, table, columns, values):
     """
     Create an SQL request to insert data in a table.
     Execute the request and catch the possible errors
@@ -55,7 +55,6 @@ def InsertInToTable(connection, table, columns, values):
     :param values: the values to insert
     :param qval: type and number of the values (optional)
     """
-    cursor = connection.cursor()
     
     qval = ', '.join(['%s']*len(values))
 
@@ -72,12 +71,9 @@ def InsertInToTable(connection, table, columns, values):
             print(f"No matching foreign key: {values}")
         else:
             print(f"ERROR: {values}, {e}")
-    finally:
-        cursor.close()
-        connection.commit()
 
 #############################################################################################"
-def insertion(connection): 
+def insertion(connection, cursor): 
     """
     
      @params : 
@@ -122,7 +118,7 @@ def insertion(connection):
         if(goodDataResto(street,delivery,evaluation,opening,closing)):
             if (city.isdigit() and not zipcode.isdigit()):
                 city, zipcode = zipcode, city           #on swap les deux
-            InsertInToTable(connection,tableResto,columnResto,(resto,street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing))
+            InsertInToTable(connection,cursor,tableResto,columnResto,(resto,street,number,city,zipcode,country,delivery,evaluation,price_range,Type,opening,closing))
   
     #############################################################
 
@@ -133,7 +129,7 @@ def insertion(connection):
                 price = (dish.find("price").text.strip())                     # par exemple 17.7
             
                # InsertInToTable(connection,tablePlat,columnPlat,(name_plat,price))         # faire un insert dans la table plat
-                InsertInToTable(connection,tableMenuResto,columnMenu,(resto,name_plat,price[:-1]))         #insert dans la table menuPlat
+                InsertInToTable(connection,cursor,tableMenuResto,columnMenu,(resto,name_plat,price[:-1]))         #insert dans la table menuPlat
             
             #############################################################
         # INFORMATIONS SUR PLAT ALLERGENES
@@ -141,15 +137,18 @@ def insertion(connection):
                     all = allergen.find("allergen")
                     if (all is not None):                    # s'il ya toujours un allergene 
                         allergen_name = all.text.strip()
-                    InsertInToTable(connection,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
+                    InsertInToTable(connection,cursor,tableAllergenResto,columnPlatAllergen,(resto,name_plat,allergen_name))
             #############################################################
         
 
 def main():
     connection = create_connection()
-    insertion(connection)
+    cursor = connection.cursor()
+    insertion(connection, cursor)
     print("Job done")
-main()
+
+if __name__ == "__main__":
+    main()
 
 
 

@@ -246,4 +246,6 @@ def main():
         connection.close()
 
     print("Job's done")
-main()
+    
+if __name__ == "__main__":
+    main()

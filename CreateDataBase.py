@@ -33,8 +33,10 @@ def createDb(connection, ddlPath):    # le chemein vers la db
         create_tables = f.read()          #charge toute un chaine de charactere
     try:
         with connection.cursor() as cursor:
-            cursor.execute(create_tables)       #creation des tables dans le database     
-            print("Database created successfully!")
+            for result in cursor.execute(create_tables, multi=True):  # Execute multiple statements
+                pass
+            connection.commit()
+            print("Database created successfully")
     except Error as e:
         print(e)
 def main(ddlPath):
@@ -49,4 +51,6 @@ def main(ddlPath):
 ddl ="BDD_DDL.sql"
 
 
-main(ddl)
+if __name__ == "__main__":
+    ddl = "BDD_DDL.sql"
+    main(ddl)
