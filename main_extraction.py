@@ -20,7 +20,7 @@ def create_connection():
         
         connection = connect(
             host="localhost",
-            user="root",    #input("Enter username: ")"",
+            user=input("Enter username: "),
             password=input("Enter password: "),
         )
         print("Connection successful")
@@ -29,13 +29,20 @@ def create_connection():
     except Error as e:
         print(e)
 
-#FILE PATHS
+##################################################################
+###                         FILE PATHS                         ###
+##################################################################
 ddlPath = "BDD_DDL.sql"
 restaurateur_json_path = 'AllData/restaurateur.json'
 customers_json_path = 'AllData/customers.json'
 moderators_json_path = 'AllData/moderators.json'
 file_path_refused_reviews = "AllData/removed_comments.tsv"
 file_path_valid_reviews = "AllData/valid_comments.tsv"
+
+
+##################################################################
+###                           MAIN                             ###
+##################################################################
 
 def main():
     connexion = create_connection()

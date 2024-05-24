@@ -1,17 +1,6 @@
 import json
 import mysql.connector
 
-# Connexion à la base de données
-connexion = mysql.connector.connect(
-    host="localhost",
-    user='root',#input("Enter username: ")'',
-    password= input("Enter password: "),
-    database="FastFood"
-)
-
-cursor = connexion.cursor()
-
-
 def notSpecialChar(chaine):
     caracteres_speciaux = "[]"
     for caractere in chaine:
@@ -132,31 +121,3 @@ def mod_extraction(data, cursor, connexion):
                 cursor.execute(query_mod, data_mod)
 
                 connexion.commit()
-
-def main():
-
-    files = [
-        r'AllData/restaurateur.json',
-        r'AllData/customers.json',
-        r'AllData/moderators.json'
-    ]
-
-    with open(files[0]) as file:
-        data = json.load(file)
-        rest_extraction(data, cursor, connexion)
-
-    with open(files[1]) as file:
-        data = json.load(file)
-    client_extraction(data, cursor, connexion)
-
-    with open(files[2]) as file:
-        data = json.load(file)
-        mod_extraction(data, cursor, connexion)
-
-    # Fermer le curseur et la connexion
-    cursor.close()
-    connexion.close()
-    print("Extraction complete")    # extraction de client moderateur restaurateur
-
-if __name__ == "__main__":
-    main()

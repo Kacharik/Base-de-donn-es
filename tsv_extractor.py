@@ -3,29 +3,10 @@ from mysql.connector import connect, Error
 from mysql.connector.errors import IntegrityError 
 from datetime import datetime
 
-##########################""
-def create_connection():
-    """
-    Create a connection to the MySQL database.
-    """
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password=input("Entrez le mot de passe : "),     # METTEZ VOS IDENTIFIANTS
-            database="FastFood"
-        )
-        print("Connection successful")
-        return connection
-    except Error as e:
-        print(f"Error during connection: {e}")
-        return None
-
 #################################################################################################
 #                                   OTHER FUNCTIONS                                             #
 #################################################################################################
 
-# ca fonctionne
 def check_data(rating, date_comment, recommendation,d_h_rating, visit_date, items_ordered, cost, start, end):
         return (
             isinstance(rating, float) and
@@ -78,19 +59,12 @@ def sql_get_id(connection, table, id_column, *column_value_pairs):
     
     return None if not result else result[0][0]
 
-#####################################################################################
-
-def parse_date(date_str):
-    # Try to parse the date string in the given format
-    try:
-        return datetime.strptime(date_str, "%m/%d/%Y %H:%M").strftime("%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        #print(f"Invalid date format: {date_str}")
-        return None
-
 ####################################################################################
 
 def check_duplicate_entry(connection, table, columns, values):
+    """
+    Verifie si il n'y a pas deja dans la table
+    """
     cursor = connection.cursor()
     conditions = ' AND '.join([f"{col} = %s" for col in columns])
     sql = f"SELECT COUNT(*) FROM {table} WHERE {conditions}"
@@ -146,7 +120,6 @@ def extract_reviews(file_path, connection, table_name, columns, columnsPlat, has
     """
     count = 0
     count_total = 0
-    counter = 0
     with open(file_path, 'r', encoding='utf-8') as file:
         next(file)  # Skip the header line
         print(f"Starting to process comments for {table_name}")
@@ -230,22 +203,3 @@ def extract_valid_reviews(file_path, connection):
     extract_reviews(file_path, connection, "AvisValid", columns, columnsPlat, has_reason=False)
 
     
-
-###########################################################################
-#                                MAIN                                     #
-###########################################################################
-
-
-def main():
-    connection = create_connection()
-    if connection:
-        file_path_refused_reviews = "AllData/removed_comments.tsv"
-        extract_deleted_reviews(file_path_refused_reviews, connection)
-        file_path_valid_reviews = "AllData/valid_comments.tsv"
-        extract_valid_reviews(file_path_valid_reviews, connection)  
-        connection.close()
-
-    print("Job's done")
-    
-if __name__ == "__main__":
-    main()

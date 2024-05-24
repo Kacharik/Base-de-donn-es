@@ -3,30 +3,6 @@ from mysql.connector import connect, Error
 import mysql.connector.errors 
 import xml.etree.ElementTree as El
 
-##########################""
-def create_connection():
-    """
-    Connect to the database.
-    :return: connection : the connection
-    """
-   
-    try:
-        
-        connection = connect(
-            host="localhost",
-            user='root',#input("Enter username: ")'',
-            password= 'BIGKARTH',#input("Enter password: "),
-            database="FastFood"
-        )
-        
-        print("Connection successful")
-        return connection
-
-    except Error as e:          # reception des error lors de la connection
-        print(e)
-
-#################################################################################################
-#CONNEXION ETABLIE
 def notSpecialChar(chaine):
     caracteres_speciaux = "[]"
     for caractere in chaine:
@@ -38,9 +14,7 @@ def goodDataResto(street,delivery,evaluation,opening,closing):
     # verifier si toutes les donnees pour un restaurant sont valides 
     noSpecialChar = notSpecialChar(street)
     goodNote = 0<= float(evaluation) <=5                # si l'evaluation est correct et a un sens 
-    #goodType = price_range in ("moyen", "haut","bas")
     goodHour = int(opening) < int(closing)
-    #goodDigit = number.isdigit()
     # Vérifie si le caractère est dans la liste des caractères spéciaux
     return noSpecialChar and goodHour and goodNote
   
@@ -55,9 +29,7 @@ def InsertInToTable(connection, cursor, table, columns, values):
     :param values: the values to insert
     :param qval: type and number of the values (optional)
     """
-    
     qval = ', '.join(['%s']*len(values))
-
  
     sql = f"INSERT INTO {table} ({', '.join(item for item in columns)}) VALUES ({qval})"
     try:
@@ -74,8 +46,7 @@ def InsertInToTable(connection, cursor, table, columns, values):
 
 #############################################################################################"
 def insertion(connection, cursor): 
-    """
-    
+    """   
      @params : 
         connection   : pour la connection avec la db 
         line : les valeurs des attributs de l'entite
@@ -147,15 +118,6 @@ def insertion(connection, cursor):
                 connection.rollback()
                 continue  # Continue to the next restaurant
         
-
-def main():
-    connection = create_connection()
-    cursor = connection.cursor()
-    insertion(connection, cursor)
-    print("Job done")
-
-if __name__ == "__main__":
-    main()
 
 
 
