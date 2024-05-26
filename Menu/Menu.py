@@ -175,7 +175,6 @@ def Perso():
         print("Client")
         print("Restaurateur")
         print("Moderateur")
-        print("Exit")
         print()
         choix = input()
         effacer_terminal()
